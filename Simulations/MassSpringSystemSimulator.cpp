@@ -3,12 +3,13 @@
 MassSpringSystemSimulator::MassSpringSystemSimulator()
 {
 	//TODO
+	m_iTestCase = 0;
 }
 
 // Start of UI functions
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {
-	return nullptr;
+	return "BasicTest,Setup1,Setup2,Setup3"; // names copied from example video
 }
 
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
@@ -18,7 +19,9 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 
 void MassSpringSystemSimulator::reset()
 {
-	//TODO
+	m_mouse.x = m_mouse.y = 0;
+	m_trackmouse.x = m_trackmouse.y = 0;
+	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 }
 
 void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
@@ -29,6 +32,29 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 {
 	//TODO
+	m_iTestCase = testCase;
+	switch (m_iTestCase)
+	{
+	case 0:
+		cout << "BasicTest!\n";
+		// m_vfMovableObjectPos = Vec3(0, 0, 0);  // template simulator
+		// m_vfRotate = Vec3(0, 0, 0);
+		break;
+	case 1:
+		cout << "Setup1!\n";
+		// m_iNumSpheres = 100;
+		// m_fSphereSize = 0.05f;
+		break;
+	case 2:
+		cout << "Setup2!\n";
+		break;
+	case 3:
+		cout << "Setup3!\n";
+		break;
+	default:
+		cout << "Empty Test!\n";
+		break;
+	}
 }
 
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
@@ -43,12 +69,16 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
-	//TODO
+	m_trackmouse.x = x;
+	m_trackmouse.y = y;
 }
 
 void MassSpringSystemSimulator::onMouse(int x, int y)
 {
-	//TODO
+	m_oldtrackmouse.x = x;
+	m_oldtrackmouse.y = y;
+	m_trackmouse.x = x;
+	m_trackmouse.y = y;
 }
 // End of UI functions
 
