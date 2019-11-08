@@ -54,5 +54,10 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
+
+	// Vectors
+	vector<Vec3> mp_position;
+	vector<Vec3> mp_velocity;
+	vector<Vec3> springs;  // TODO different data type, if any at all? See comments in addSpring()
 };
 #endif

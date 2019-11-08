@@ -2,19 +2,36 @@
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
 {
-	//TODO
+	// TODO initialize necessary variables
 	m_iTestCase = 0;
 }
 
 // Start of UI functions
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {
-	return "BasicTest,Setup1,Setup2,Setup3"; // names copied from example video
+	return "Demo1,Demo2,Demo3,Demo4";  // demo 5 optional
 }
 
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
-	//TODO
+	this->DUC = DUC;
+	switch (m_iTestCase)
+	{
+	case 0:
+		TwRemoveVar(DUC->g_pTweakBar, "Timestep");  // time step in demo is constant
+		break;
+	case 1:
+		TwRemoveVar(DUC->g_pTweakBar, "Timestep");  // time step in demo is constant
+		break;
+	case 2:
+		TwRemoveVar(DUC->g_pTweakBar, "Timestep");  // time step in demo is constant
+		break;
+	case 3:
+		TwAddVarRW(DUC->g_pTweakBar, "Integrator", TW_TYPE_INT32, &m_iIntegrator, "min=0 max=2 step=2"); // TODO display names instead
+		// TODO add more TwAddVarRW() (see page 3 point 4 in task description)
+		break;
+	default:break;
+	}
 }
 
 void MassSpringSystemSimulator::reset()
@@ -26,32 +43,31 @@ void MassSpringSystemSimulator::reset()
 
 void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
-	//TODO
+	// TODO (tips on last exercise page)
 }
 
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 {
-	//TODO
+	// TODO set initial variables in demos where necessary (possibly spawn mass points and strings here)
 	m_iTestCase = testCase;
 	switch (m_iTestCase)
 	{
 	case 0:
-		cout << "BasicTest!\n";
-		// m_vfMovableObjectPos = Vec3(0, 0, 0);  // template simulator
-		// m_vfRotate = Vec3(0, 0, 0);
+		cout << "Demo1!\n";
+		// TODO set time step to 0.1
 		break;
 	case 1:
-		cout << "Setup1!\n";
-		// m_iNumSpheres = 100;
-		// m_fSphereSize = 0.05f;
+		cout << "Demo2!\n";
+		// TODO set time step to 0.005
 		break;
 	case 2:
-		cout << "Setup2!\n";
+		cout << "Demo3!\n";
+		// TODO set time step to 0.005
 		break;
 	case 3:
-		cout << "Setup3!\n";
+		cout << "Demo4!\n";
 		break;
-	default:
+	default:  // demo 5 optional
 		cout << "Empty Test!\n";
 		break;
 	}
@@ -59,12 +75,12 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 {
-	//TODO
+	// TODO
 }
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
-	//TODO
+	// TODO
 }
 
 void MassSpringSystemSimulator::onClick(int x, int y)
@@ -100,41 +116,40 @@ void MassSpringSystemSimulator::setDampingFactor(float damping)
 
 int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed)
 {
-	//TODO
-	return 0;
+	mp_position.push_back(position);
+	mp_velocity.push_back(Velocity);
+	// TODO isFixed -> new vector for saving if mass point is fixed?
+	return 0; // return getNumberOfMassPoints() - 1;  // TODO return index of mass point?
 }
 
 void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float initialLength)
 {
-	//TODO
+	// TODO springs.push_back();  // How are the springs even saved? Is the springs vector even necessary? TODO: Update header file
+								  // this method doesn't return anything unlike addMassPoint()
 }
 
 int MassSpringSystemSimulator::getNumberOfMassPoints()
 {
-	//TODO
-	return 0;
+	return mp_position.size();
 }
 
 int MassSpringSystemSimulator::getNumberOfSprings()
 {
-	//TODO
-	return 0;
+	return springs.size();  // TODO if springs aren't saved in array (see addSpring() comments), maybe change to counter variable (int)
 }
 
 Vec3 MassSpringSystemSimulator::getPositionOfMassPoint(int index)
 {
-	//TODO
-	return Vec3();
+	return mp_position.at(index);
 }
 
 Vec3 MassSpringSystemSimulator::getVelocityOfMassPoint(int index)
 {
-	//TODO
-	return Vec3();
+	return mp_velocity.at(index);
 }
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force)
 {
-	//TODO
+	// TODO
 }
 // End of specific functions
