@@ -1,6 +1,8 @@
 #ifndef MASSSPRINGSYSTEMSIMULATOR_h
 #define MASSSPRINGSYSTEMSIMULATOR_h
 #include "Simulator.h"
+#include "Spring.h"
+#include "Point.h"
 
 // Do Not Change
 #define EULER 0
@@ -56,8 +58,7 @@ private:
 	Point2D m_oldtrackmouse;
 
 	// Vectors
-	vector<Vec3> mp_position;
-	vector<Vec3> mp_velocity;
-	vector<Vec3> springs;  // TODO different data type, if any at all? See comments in addSpring()
+	vector<Point> mpoints;
+	vector<Spring> springs;  // TODO different data type, if any at all? See comments in addSpring()
 };
 #endif

@@ -81,6 +81,21 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
 	// TODO
+	switch (m_iTestCase)
+	{
+	case 0:
+		
+		break;
+	case 2: // euler
+		for (int i = 0; i < mpoints.size; i++) {
+			mpoints[i].calcEulerPos(timeStep);
+		}
+		break;
+	case 3: // midpoint
+		break;
+	default:
+		break;
+	}
 }
 
 void MassSpringSystemSimulator::onClick(int x, int y)
@@ -114,23 +129,23 @@ void MassSpringSystemSimulator::setDampingFactor(float damping)
 	m_fDamping = damping;
 }
 
-int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed)
+int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 velocity, bool isFixed)
 {
-	mp_position.push_back(position);
-	mp_velocity.push_back(Velocity);
+	mpoints.push_back(Point(position, velocity, Vec3(0, 0, 0), m_fMass, m_fDamping));
 	// TODO isFixed -> new vector for saving if mass point is fixed?
-	return 0; // return getNumberOfMassPoints() - 1;  // TODO return index of mass point?
+	return getNumberOfMassPoints() - 1;  // TODO return index of mass point?
 }
 
 void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float initialLength)
 {
 	// TODO springs.push_back();  // How are the springs even saved? Is the springs vector even necessary? TODO: Update header file
 								  // this method doesn't return anything unlike addMassPoint()
+	springs.push_back(Spring(masspoint1, masspoint2, m_fStiffness, initialLength));
 }
 
 int MassSpringSystemSimulator::getNumberOfMassPoints()
 {
-	return mp_position.size();
+	return mpoints.size();
 }
 
 int MassSpringSystemSimulator::getNumberOfSprings()
@@ -140,16 +155,16 @@ int MassSpringSystemSimulator::getNumberOfSprings()
 
 Vec3 MassSpringSystemSimulator::getPositionOfMassPoint(int index)
 {
-	return mp_position.at(index);
+	return mpoints.at(index).position;
 }
 
 Vec3 MassSpringSystemSimulator::getVelocityOfMassPoint(int index)
 {
-	return mp_velocity.at(index);
+	return mpoints.at(index).velocity;
 }
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force)
 {
-	// TODO
+	// TODO, test class only calls this once with (0,0,0) so low priority if needed
 }
 // End of specific functions
