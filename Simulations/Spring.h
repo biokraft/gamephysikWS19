@@ -1,15 +1,25 @@
 #pragma once
+#include "Point.h"
+//#include "MassSpringSystemSimulator.h"
+
+class MassSpringSystemSimulator;
 class Spring
 {
 public:
 	Spring();
 	~Spring();
-	Spring(int point1, int point2, float stiffness, float initialLength);
+	Spring(Point *point1, Point *point2, float stiffness, float initialLength);
 
-	int point1;
-	int point2;
+	void computeElasticForces();
+	void addForcesToEndpoints();
+
+	Point *point1;
+	Point *point2;
+	Vec3 p1Force;
+	Vec3 p2Force;
 	float stiffness;
 	float initialLength;
+
 	// float currentLength;
 };
 

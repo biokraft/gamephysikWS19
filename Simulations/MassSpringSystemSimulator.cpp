@@ -87,7 +87,14 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 		
 		break;
 	case 2: // euler
-		for (int i = 0; i < mpoints.size; i++) {
+		for (std::vector<int>::size_type i = 0; i != springs.size(); i++) {
+			springs[i].computeElasticForces();
+			springs[i].addForcesToEndpoints();
+		}
+		for (std::vector<int>::size_type i = 0; i != mpoints.size(); i++) {
+			//mpoints[i].calcEulerPos(timeStep);
+			//mpoints[i].clearForces();
+			mpoints[i].addForce(Vec3(0,0,-10));//add gravity TODO is -z gravity ??
 			mpoints[i].calcEulerPos(timeStep);
 		}
 		break;
@@ -140,7 +147,9 @@ void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float 
 {
 	// TODO springs.push_back();  // How are the springs even saved? Is the springs vector even necessary? TODO: Update header file
 								  // this method doesn't return anything unlike addMassPoint()
-	springs.push_back(Spring(masspoint1, masspoint2, m_fStiffness, initialLength));
+
+	Spring spring = Spring(&mpoints[masspoint1], &mpoints[masspoint2], m_fStiffness, initialLength);
+	springs.push_back(spring);
 }
 
 int MassSpringSystemSimulator::getNumberOfMassPoints()
