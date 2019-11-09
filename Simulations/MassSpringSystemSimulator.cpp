@@ -81,14 +81,13 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
 	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
-		
+		mpoints[i].updateTempPos(timeStep);
 	}
 	for (std::vector<Spring>::size_type i = 0; i != springs.size(); i++) {  // TODO vector<int>?
 		springs[i].computeElasticForces();
 		springs[i].addForcesToEndpoints();
 	}
 	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
-		m_iIntegrator = EULER;
 		switch (m_iIntegrator)
 		{
 		case EULER:
@@ -96,7 +95,8 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			break;
 		case LEAPFROG:  // optional
 			break;
-		case MIDPOINT:  // TODO implement
+		case MIDPOINT:
+			mpoints[i].calcMidpoint(timeStep);
 			break;
 		default:
 			break;
