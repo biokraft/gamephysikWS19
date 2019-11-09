@@ -23,8 +23,7 @@ Point::Point(Vec3 position, Vec3 velocity, Vec3 force, float mass, float damping
 void Point::calcEulerPos(float timestep)
 {
 	position = position + velocity * timestep;
-	velocity = velocity + getAcceleration() * timestep; // is force acceleration in this case?
-	this->clearForces();
+	velocity = velocity + getAcceleration() * timestep;
 }
 
 void Point::calcMidpoint(float timestep)

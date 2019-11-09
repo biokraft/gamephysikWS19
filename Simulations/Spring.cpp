@@ -24,14 +24,14 @@ void Spring::computeElasticForces() {
 	Vec3 p2 = point2->position;
 
 	//Calculate distance
-	Vec3 diff = p1 - p2; 
+	Vec3 diff = p1 - p2;
 	float distance = sqrtf(dot(diff, diff));
-	Vec3 normalizedDirection = diff / distance; 
+	Vec3 normalizedDirection = diff / distance;
 
 
 	//Calculate Force (Hooks Law) 
 	//F = -stiffness × (||P1 - P2|| - rest_length)
-	float f = (stiffness * (distance - initialLength));
+	float f = ((-stiffness) * (distance - initialLength));
 	p1Force = f * normalizedDirection;
 	p2Force = f * (-normalizedDirection);
 }

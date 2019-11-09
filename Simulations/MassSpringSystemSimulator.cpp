@@ -80,27 +80,29 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
-	// TODO
-	switch (m_iIntegrator)
-	{
-	case EULER:
-		for (std::vector<int>::size_type i = 0; i != springs.size(); i++) {
-			springs[i].computeElasticForces();
-			springs[i].addForcesToEndpoints();
-		}
-		for (std::vector<int>::size_type i = 0; i != mpoints.size(); i++) {
-			//mpoints[i].calcEulerPos(timeStep);
-			//mpoints[i].clearForces();
-			mpoints[i].addForce(Vec3(0,0,-10));  // add gravity TODO is -z gravity ??
+	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+		
+	}
+	for (std::vector<Spring>::size_type i = 0; i != springs.size(); i++) {  // TODO vector<int>?
+		springs[i].computeElasticForces();
+		springs[i].addForcesToEndpoints();
+	}
+	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+		m_iIntegrator = EULER;
+		switch (m_iIntegrator)
+		{
+		case EULER:
 			mpoints[i].calcEulerPos(timeStep);
+			break;
+		case LEAPFROG:  // optional
+			break;
+		case MIDPOINT:  // TODO implement
+			break;
+		default:
+			break;
 		}
-		break;
-	case LEAPFROG:  // optional
-		break;
-	case MIDPOINT:  // TODO implement
-		break;
-	default:
-		break;
+		mpoints[i].clearForces();
+		// mpoints[i].addForce(Vec3(0,0,-10));  // TODO add gravity in Demo4
 	}
 }
 
