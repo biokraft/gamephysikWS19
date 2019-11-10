@@ -8,7 +8,7 @@ class Spring
 public:
 	Spring();
 	~Spring();
-	Spring(Point *point1, Point *point2, float stiffness, float initialLength);
+	Spring(Point *point1, Point *point2, float* stiffness, float initialLength);
 
 	void computeElasticForces();
 	void computeElasticMidpointForces();
@@ -18,7 +18,7 @@ public:
 	Point *point2;
 	Vec3 p1Force;
 	Vec3 p2Force;
-	float stiffness;
+	float* stiffness;
 	float initialLength;
 
 	// float currentLength;

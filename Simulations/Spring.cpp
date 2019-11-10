@@ -10,7 +10,7 @@ Spring::~Spring()
 {
 }
 
-Spring::Spring(Point *point1, Point *point2, float stiffness, float initialLength)
+Spring::Spring(Point *point1, Point *point2, float* stiffness, float initialLength)
 {
 	this->point1 = point1;
 	this->point2 = point2;
@@ -31,7 +31,7 @@ void Spring::computeElasticForces() {
 
 	//Calculate Force (Hooks Law) 
 	//F = -stiffness × (||P1 - P2|| - rest_length)
-	float f = ((-stiffness) * (distance - initialLength));
+	float f = (-(*stiffness) * (distance - initialLength));
 	p1Force = f * normalizedDirection;
 	p2Force = f * (-normalizedDirection);
 }
@@ -49,7 +49,7 @@ void Spring::computeElasticMidpointForces() {
 
 	//Calculate Force (Hooks Law) 
 	//F = -stiffness × (||P1 - P2|| - rest_length)
-	float f = ((-stiffness) * (distance - initialLength));
+	float f = (-(*stiffness) * (distance - initialLength));
 	p1Force = f * normalizedDirection;
 	p2Force = f * (-normalizedDirection);
 }

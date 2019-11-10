@@ -28,8 +28,8 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 		break;
 	case 3:
 		TwAddVarRW(DUC->g_pTweakBar, "Integrator", TW_TYPE_TESTCASE_INTEGRATOR, &m_iIntegrator, "");
-		TwAddVarRW(DUC->g_pTweakBar, "Mass", TW_TYPE_FLOAT, &m_fMass, "step=0.0001 min=0.0001");
-		TwAddVarRW(DUC->g_pTweakBar, "Stiffness", TW_TYPE_FLOAT, &m_fStiffness, "step=0.01 min=0.01");
+		TwAddVarRW(DUC->g_pTweakBar, "Mass", TW_TYPE_FLOAT, &m_fMass, "step=0.01 min=0.01");
+		TwAddVarRW(DUC->g_pTweakBar, "Stiffness", TW_TYPE_FLOAT, &m_fStiffness, "step=0.1 min=0.1");
 		break;
 	default:break;
 	}
@@ -101,8 +101,6 @@ void MassSpringSystemSimulator::setupDemo1()
 	mpoints.clear();
 	springs.clear();
 	m_iIntegrator = MIDPOINT;
-	setMass(10);
-	setStiffness(40);
 	mp0 = addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
 	mp1 = addMassPoint(Vec3(0, 2, 0), Vec3(1, 0, 0), false);
 	addSpring(mp0, mp1, 1);
@@ -136,7 +134,7 @@ void MassSpringSystemSimulator::setupDemo4()
 {
 	m_iIntegrator = EULER;
 	setMass(10);
-	setStiffness(40);
+	setStiffness(100);
 	std::mt19937 eng;
 	std::uniform_real_distribution<float> randPos(-0.5f, 0.5f);
 	for (int i = 0; i < 10; i++)
@@ -155,7 +153,26 @@ void MassSpringSystemSimulator::setupDemo4()
 
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 {
-	// TODO add external forces
+	if (m_iTestCase != 3)
+	{
+		return;
+	}
+	Point2D mouseDiff;
+	mouseDiff.x = m_trackmouse.x - m_oldtrackmouse.x;
+	mouseDiff.y = m_trackmouse.y - m_oldtrackmouse.y;
+	if (mouseDiff.x != 0 || mouseDiff.y != 0)
+	{
+		Mat4 worldViewInv = Mat4(DUC->g_camera.GetWorldMatrix() * DUC->g_camera.GetViewMatrix());
+		worldViewInv = worldViewInv.inverse();
+		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
+		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
+		float inputScale = 0.000025f;
+		inputWorld = inputWorld * inputScale;
+		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			mpoints[i].position += inputWorld;
+			mpoints[i].velocity.y = 0;
+		}
+	}
 }
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
@@ -173,7 +190,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			{
 				mpoints[i].addForce(gravity);
 			}
-			mpoints[i].calcEulerPos(timeStep);
+			mpoints[i].calcEulerPos(timeStep, m_iTestCase == 3);
 			mpoints[i].clearForces();
 		}
 		break;
@@ -201,7 +218,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			{
 				mpoints[i].addForce(gravity);
 			}
-			mpoints[i].calcMidpoint(timeStep);
+			mpoints[i].calcMidpoint(timeStep, m_iTestCase == 3);
 			mpoints[i].clearForces();
 		}
 		break;
@@ -243,13 +260,13 @@ void MassSpringSystemSimulator::setDampingFactor(float damping)
 
 int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 velocity, bool isFixed)  // currently isFixed has no effect
 {
-	mpoints.push_back(Point(position, velocity, Vec3(0, 0, 0), m_fMass, m_fDamping));
+	mpoints.push_back(Point(position, velocity, Vec3(0, 0, 0), &m_fMass, &m_fDamping, isFixed));
 	return getNumberOfMassPoints() - 1;
 }
 
 void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float initialLength)
 {
-	Spring spring = Spring(&mpoints[masspoint1], &mpoints[masspoint2], m_fStiffness, initialLength);
+	Spring spring = Spring(&mpoints[masspoint1], &mpoints[masspoint2], &m_fStiffness, initialLength);
 	springs.push_back(spring);
 }
 
@@ -275,6 +292,8 @@ Vec3 MassSpringSystemSimulator::getVelocityOfMassPoint(int index)
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force)
 {
-	// TODO, test class only calls this once with (0,0,0) so low priority if needed
+	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+		mpoints[i].addForce(force);
+	}
 }
 // End of specific functions
