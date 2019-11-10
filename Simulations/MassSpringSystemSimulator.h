@@ -10,6 +10,7 @@
 #define MIDPOINT 2
 // Do Not Change
 
+class main;
 
 class MassSpringSystemSimulator:public Simulator{
 public:
@@ -22,6 +23,10 @@ public:
 	void reset();
 	void drawFrame(ID3D11DeviceContext* pd3dImmediateContext);
 	void notifyCaseChanged(int testCase);
+	void setupDemo1();
+	void setupDemo2();
+	void setupDemo3();
+	void setupDemo4();
 	void externalForcesCalculations(float timeElapsed);
 	void simulateTimestep(float timeStep);
 	void onClick(int x, int y);
@@ -59,6 +64,6 @@ private:
 
 	// Vectors
 	vector<Point> mpoints;
-	vector<Spring> springs;  // TODO different data type, if any at all? See comments in addSpring()
+	vector<Spring> springs;
 };
 #endif
