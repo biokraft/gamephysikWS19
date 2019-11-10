@@ -160,6 +160,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
+	Vec3 gravity = Vec3(0, -10, 0);
 	switch (m_iIntegrator)
 	{
 	case EULER:
@@ -168,6 +169,10 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			springs[i].addForcesToEndpoints();
 		}
 		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			if (m_iTestCase == 3)
+			{
+				mpoints[i].addForce(gravity);
+			}
 			mpoints[i].calcEulerPos(timeStep);
 			mpoints[i].clearForces();
 		}
@@ -180,6 +185,10 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			springs[i].addForcesToEndpoints();
 		}
 		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			if (m_iTestCase == 3)
+			{
+				mpoints[i].addForce(gravity);
+			}
 			mpoints[i].updateMidVals(timeStep);
 			mpoints[i].clearForces();
 		}
@@ -188,6 +197,10 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			springs[i].addForcesToEndpoints();
 		}
 		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			if (m_iTestCase == 3)
+			{
+				mpoints[i].addForce(gravity);
+			}
 			mpoints[i].calcMidpoint(timeStep);
 			mpoints[i].clearForces();
 		}
