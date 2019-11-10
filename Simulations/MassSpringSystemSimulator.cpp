@@ -15,6 +15,7 @@ const char * MassSpringSystemSimulator::getTestCasesStr()
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
+	// TwType TW_TYPE_TESTCASE_INTEGRATOR = TwDefineEnumFromString("Test Scene", "EULER,LEAP_FROG,MIDPOINT");
 	switch (m_iTestCase)
 	{
 	case 0:
@@ -28,6 +29,7 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 		break;
 	case 3:
 		TwAddVarRW(DUC->g_pTweakBar, "Integrator", TW_TYPE_INT32, &m_iIntegrator, "min=0 max=2 step=2"); // TODO display names instead
+		// TwAddVarRW(DUC->g_pTweakBar, "IntegratorNamed", TW_TYPE_TESTCASE_INTEGRATOR, &m_iIntegrator, "");
 		// TODO add more TwAddVarRW() (see page 3 point 4 in task description)
 		break;
 	default:break;
@@ -80,29 +82,40 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
-	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
-		mpoints[i].updateTempPos(timeStep);
-	}
-	for (std::vector<Spring>::size_type i = 0; i != springs.size(); i++) {  // TODO vector<int>?
-		springs[i].computeElasticForces();
-		springs[i].addForcesToEndpoints();
-	}
-	for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
-		switch (m_iIntegrator)
-		{
-		case EULER:
-			mpoints[i].calcEulerPos(timeStep);
-			break;
-		case LEAPFROG:  // optional
-			break;
-		case MIDPOINT:
-			mpoints[i].calcMidpoint(timeStep);
-			break;
-		default:
-			break;
+	switch (m_iIntegrator)
+	{
+	case EULER:
+		for (std::vector<Spring>::size_type i = 0; i != springs.size(); i++) {  // TODO vector<int>?
+			springs[i].computeElasticForces();
+			springs[i].addForcesToEndpoints();
 		}
-		mpoints[i].clearForces();
-		// mpoints[i].addForce(Vec3(0,0,-10));  // TODO add gravity in Demo4
+		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			mpoints[i].calcEulerPos(timeStep);
+			mpoints[i].clearForces();
+		}
+		break;
+	case LEAPFROG:  // optional
+		break;
+	case MIDPOINT:
+		for (std::vector<Spring>::size_type i = 0; i != springs.size(); i++) {  // TODO vector<int>?
+			springs[i].computeElasticForces();
+			springs[i].addForcesToEndpoints();
+		}
+		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			mpoints[i].updateMidVals(timeStep);
+			mpoints[i].clearForces();
+		}
+		for (std::vector<Spring>::size_type i = 0; i != springs.size(); i++) {  // TODO vector<int>?
+			springs[i].computeElasticMidpointForces();
+			springs[i].addForcesToEndpoints();
+		}
+		for (std::vector<Point>::size_type i = 0; i != mpoints.size(); i++) {
+			mpoints[i].calcMidpoint(timeStep);
+			mpoints[i].clearForces();
+		}
+		break;
+	default:
+		break;
 	}
 }
 

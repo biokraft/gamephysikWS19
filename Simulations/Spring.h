@@ -11,6 +11,7 @@ public:
 	Spring(Point *point1, Point *point2, float stiffness, float initialLength);
 
 	void computeElasticForces();
+	void computeElasticMidpointForces();
 	void addForcesToEndpoints();
 
 	Point *point1;
