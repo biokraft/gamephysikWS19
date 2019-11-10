@@ -27,9 +27,9 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 		TwRemoveVar(DUC->g_pTweakBar, "Timestep");  // time step in demo is constant
 		break;
 	case 3:
-		// TwAddVarRW(DUC->g_pTweakBar, "Integrator", TW_TYPE_INT32, &m_iIntegrator, "min=0 max=2 step=2");
-		TwAddVarRW(DUC->g_pTweakBar, "Integrator", TW_TYPE_TESTCASE_INTEGRATOR, &m_iIntegrator, "");  // TODO (LOW PRIORITY) skip unimplemented
-		// TODO add more TwAddVarRW() (see page 3 point 4 in task description)
+		TwAddVarRW(DUC->g_pTweakBar, "Integrator", TW_TYPE_TESTCASE_INTEGRATOR, &m_iIntegrator, "");
+		TwAddVarRW(DUC->g_pTweakBar, "Mass", TW_TYPE_FLOAT, &m_fMass, "step=0.0001 min=0.0001");
+		TwAddVarRW(DUC->g_pTweakBar, "Stiffness", TW_TYPE_FLOAT, &m_fStiffness, "step=0.01 min=0.01");
 		break;
 	default:break;
 	}
@@ -47,7 +47,7 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 	for (int i = 0; i < getNumberOfMassPoints(); i++)
 	{
 		DUC->setUpLighting(Vec3(), 0.4*Vec3(1, 1, 1), 100, Vec3(1, 0, 0));
-		DUC->drawSphere(getPositionOfMassPoint(i), 0.01f * Vec3(m_fMass, m_fMass, m_fMass));
+		DUC->drawSphere(getPositionOfMassPoint(i), Vec3(0.05f, 0.05f, 0.05f));
 	}
 	for (int i = 0; i < getNumberOfSprings(); i++)
 	{
@@ -134,7 +134,23 @@ void MassSpringSystemSimulator::setupDemo3()
 
 void MassSpringSystemSimulator::setupDemo4()
 {
-	// TODO set up demo 4
+	m_iIntegrator = EULER;
+	setMass(10);
+	setStiffness(40);
+	std::mt19937 eng;
+	std::uniform_real_distribution<float> randPos(-0.5f, 0.5f);
+	for (int i = 0; i < 10; i++)
+	{
+		addMassPoint(Vec3(randPos(eng), randPos(eng), randPos(eng)), Vec3(0,0,0), false);
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = i + 1; j < 10; j++)
+		{
+			Vec3 diff = getPositionOfMassPoint(i) - getPositionOfMassPoint(j);
+			addSpring(i, j, sqrtf(dot(diff, diff)));
+		}
+	}
 }
 
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
