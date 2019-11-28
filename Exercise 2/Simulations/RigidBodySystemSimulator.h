@@ -2,7 +2,8 @@
 #define RIGIDBODYSYSTEMSIMULATOR_h
 #include "Simulator.h"
 //add your header for your rigid body system, for e.g.,
-//#include "rigidBodySystem.h" 
+//#include "rigidBodySystem.h"
+#include "RigidBody.h"
 
 #define TESTCASEUSEDTORUNTEST 2
 
@@ -35,12 +36,17 @@ public:
 private:
 	// Attributes
 	// add your RigidBodySystem data members, for e.g.,
-	// RigidBodySystem * m_pRigidBodySystem; 
-	Vec3 m_externalForce;
+	// RigidBodySystem * m_pRigidBodySystem;
+
+	// Data Attributes
 
 	// UI Attributes
+	Vec3 m_externalForce;
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
+
+	// Vectors
+	vector<RigidBody> rigidbodies;
 	};
 #endif
