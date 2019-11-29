@@ -13,6 +13,7 @@ public:
 	Mat4 getRotationMatrix();
 	Mat4 getScaleMatrix();
 	Mat4 getTranslationMatrix();
+	Mat4 getCurrentInertia();
 
 	Vec3 position;
 	Vec3 size;
@@ -21,5 +22,8 @@ public:
 	Vec3 force;
 	Quat orientation;
 	float mass;
+private:
+	Mat4 inertia_0;
+	void computeI_0();
 };
 
