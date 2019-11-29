@@ -29,3 +29,25 @@ void RigidBody::addForce(Vec3 additionalForce)
 {
 	force += additionalForce;
 }
+
+Mat4 RigidBody::getWorldMatrix()
+{
+	Mat4 worldMatrix = getScaleMatrix() * getRotationMatrix() * getTranslationMatrix();
+	return worldMatrix;
+}
+
+Mat4  RigidBody::getScaleMatrix() {
+	Mat4 mat;
+	mat.initScaling(size.x,size.y,size.z);
+	return mat;
+}
+
+Mat4  RigidBody::getRotationMatrix() {
+	return orientation.getRotMat();
+}
+
+Mat4  RigidBody::getTranslationMatrix() {
+	Mat4 mat;
+	mat.initTranslation(position.x,position.y,position.z);
+	return mat;
+}

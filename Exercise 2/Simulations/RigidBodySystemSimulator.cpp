@@ -2,6 +2,8 @@
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
+	//Test
+	addRigidBody(Vec3(0,0,0),Vec3(1,1,1),1);
 }
 
 const char * RigidBodySystemSimulator::getTestCasesStr()
@@ -11,6 +13,7 @@ const char * RigidBodySystemSimulator::getTestCasesStr()
 
 void RigidBodySystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
+	this->DUC = DUC;
 	// TODO implement
 }
 
@@ -23,6 +26,12 @@ void RigidBodySystemSimulator::reset()
 
 void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
+	for (int i = 0; i < getNumberOfRigidBodies(); i++)
+	{
+		DUC->setUpLighting(Vec3(), 0.4*Vec3(1, 1, 1), 100, Vec3(1, 1, 1));
+		DUC->drawRigidBody(rigidbodies.at(i).getWorldMatrix());
+		//DUC->drawSphere(getPositionOfMassPoint(i), Vec3(0.05f, 0.05f, 0.05f));
+	}
 	// TODO implement
 }
 
@@ -83,7 +92,8 @@ void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
 {
-	rigidbodies.push_back(RigidBody(position, size, Vec3(), Vec3(), Vec3(), Quat(), mass));
+	Vec3 eulerTest = Vec3(0.15,0.15,0);
+	rigidbodies.push_back(RigidBody(position, size, Vec3(), Vec3(), Vec3(), Quat(eulerTest,360), mass));
 }
 
 void RigidBodySystemSimulator::setOrientationOf(int i, Quat orientation)
