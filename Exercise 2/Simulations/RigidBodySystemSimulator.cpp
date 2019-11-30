@@ -48,6 +48,11 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
 	// TODO implement
+	for (int i = 0; i < getNumberOfRigidBodies(); i++) {
+		//rigidbodies.at(i).addForce(Vec3(0.5f,0.5f,0.2f));
+		rigidbodies.at(i).simulateRotation(timeStep);
+		//rigidbodies.at(i).clearForces();
+	}
 }
 
 void RigidBodySystemSimulator::onClick(int x, int y)
@@ -92,8 +97,8 @@ void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
 {
-	Vec3 eulerTest = Vec3(0.15,0.15,0);
-	rigidbodies.push_back(RigidBody(position, size, Vec3(), Vec3(), Vec3(), Quat(eulerTest,360), mass));
+	//Vec3 eulerTest = Vec3(0.15,0.15,0);
+	rigidbodies.push_back(RigidBody(position, size, Vec3(), Vec3(), Vec3(), Quat(), mass));
 }
 
 void RigidBodySystemSimulator::setOrientationOf(int i, Quat orientation)

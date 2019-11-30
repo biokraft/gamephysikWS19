@@ -64,10 +64,43 @@ void RigidBody::computeI_0() {
 	float h = size.y;
 	float d = size.z;
 	float w = size.x;
-	mat.value[0][0] = (1.0 / 12.0)*mass*(h*h + d * d);
-	mat.value[1][1] = (1.0 / 12.0)*mass*(w*w + d * d);
-	mat.value[2][2] = (1.0 / 12.0)*mass*(w*w + h * h);
-	inertia_0 = mat;
+	mat.value[0][0] = double((1.0 / 12.0)*mass*(h*h + d * d));
+	mat.value[1][1] = double((1.0 / 12.0)*mass*(w*w + d * d));
+	mat.value[2][2] = double((1.0 / 12.0)*mass*(w*w + h * h));
+	inertia_0 = mat;//TODO inverse?
+}
+
+void RigidBody::simulatePosition(float timestep) {
+	//TODO copy exercise 1 stuff
+}
+
+void RigidBody::simulateRotation(float timestep) {
+
+	//1. calculate forces & convert them to torque q
+	Vec3 q = Vec3();
+	//TODO foreach point in rigidbody
+	// q += point cross force
+
+	//2.  Integrate the orientation r using the angular velocity w
+	Quat w = Quat(angularVelocity.x,angularVelocity.y,angularVelocity.z,0);//TODO check 0 position gp-lecture04-orientation.pdf page 25
+	orientation = orientation + (timestep / 2) * w * orientation; 
+
+	//3.  Integrate angular momentum L
+	angularMomentum = angularMomentum + timestep * q;
+
+	//4.  Update (inverse) Inertia Tensor I
+	//Todo check dimensions of inverse inertia
+	Mat4 rot = getRotationMatrix();
+	Mat4 rot_t = getRotationMatrix();
+	Mat4 inertia_0_inv = inertia_0.inverse();//TODO why NAN?
+	rot_t.transpose();
+
+	Mat4 inversInertia = rot * inertia_0_inv * rot_t;
+
+	//5.  Update angular velocity w using I and L
+	angularVelocity = inversInertia * angularMomentum;
+
+	//6.  Update the World Space positions of the Points based on the new orientation r
 }
 
 
