@@ -1,5 +1,6 @@
 #pragma once
 #include "DrawingUtilitiesClass.h"
+using namespace std;
 
 class RigidBody
 {
@@ -18,6 +19,8 @@ public:
 	Mat4 getCurrentInertia();
 
 	Vec3 position;
+	vector<Vec3> initPoints;
+	vector<Vec3> points;
 	Vec3 size;
 	Vec3 linearVelocity;
 	Vec3 angularVelocity;
@@ -29,5 +32,6 @@ private:
 	Mat4 inertia_0;
 	//Mat4 inversInertia;
 	void computeI_0();
+	void updatePoints();
 };
 

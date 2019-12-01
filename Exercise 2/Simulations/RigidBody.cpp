@@ -23,6 +23,60 @@ RigidBody::RigidBody(Vec3 position, Vec3 size, Vec3 linearVelocity, Vec3 angular
 	this->orientation = orientation;
 	this->mass = mass;
 	computeI_0();
+
+	// Calculate all eight points from center of mass using size
+	this->initPoints.push_back(Vec3(
+		-1.0 / 2.0 * size.x,
+		-1.0 / 2.0 * size.y,
+		-1.0 / 2.0 * size.z
+	));
+
+	this->initPoints.push_back(Vec3(
+		-1.0 / 2.0 * size.x,
+		-1.0 / 2.0 * size.y,
+		+1.0 / 2.0 * size.z
+	));
+
+	this->initPoints.push_back(Vec3(
+		-1.0 / 2.0 * size.x,
+		+1.0 / 2.0 * size.y,
+		-1.0 / 2.0 * size.z
+	));
+
+	this->initPoints.push_back(Vec3(
+		-1.0 / 2.0 * size.x,
+		+1.0 / 2.0 * size.y,
+		+1.0 / 2.0 * size.z
+	));
+	
+	this->initPoints.push_back(Vec3(
+		+1.0 / 2.0 * size.x,
+		-1.0 / 2.0 * size.y,
+		-1.0 / 2.0 * size.z
+	));
+	
+	this->initPoints.push_back(Vec3(
+		+1.0 / 2.0 * size.x,
+		-1.0 / 2.0 * size.y,
+		+1.0 / 2.0 * size.z
+	));
+	
+	this->initPoints.push_back(Vec3(
+		+1.0 / 2.0 * size.x,
+		+1.0 / 2.0 * size.y,
+		-1.0 / 2.0 * size.z
+	));
+
+	this->initPoints.push_back(Vec3(
+		+1.0 / 2.0 * size.x,
+		+1.0 / 2.0 * size.y,
+		+1.0 / 2.0 * size.z
+	));
+	std::cout << "Setting of initial points...\n";
+	for (int i = 0; i < 8; i++) {
+		std::cout << "Point " << i+1 << ": (" << initPoints.at(i).x << ", " << initPoints[i].y << ", " << initPoints[i].z << ")\n";
+	}
+	std::cout << "\n\n";
 }
 
 void RigidBody::clearForces()
@@ -80,9 +134,10 @@ void RigidBody::simulatePosition(float timestep) {
 }
 
 void RigidBody::simulateRotation(float timestep) {
+	updatePoints();
 
 	//1. calculate forces & convert them to torque q
-	Vec3 q = Vec3();
+	Vec3 q = Vec3(1.0, 1.0, 0.0);
 	//gp-lecture03-rigid-bodies-2D.pdf page 24
 	//TODO foreach point in rigidbody
 	// q += point cross force
@@ -108,6 +163,19 @@ void RigidBody::simulateRotation(float timestep) {
 	angularVelocity = inversInertia * angularMomentum;
 
 	//6.  Update the World Space positions of the Points based on the new orientation r
+}
+
+void RigidBody::updatePoints() {
+	points.clear();
+	for (int i = 0; i < 8; i++) {
+		points.push_back(getWorldMatrix() * initPoints[i]);
+	}
+
+	/*std::cout << "Setting of current points...\n";
+	for (int i = 0; i < 8; i++) {
+		std::cout << "Point " << i + 1 << ": (" << points.at(i).x << ", " << points[i].y << ", " << points[i].z << ")\n";
+	}
+	std::cout << "\n\n";*/
 }
 
 
