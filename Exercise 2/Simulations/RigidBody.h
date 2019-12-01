@@ -34,7 +34,6 @@ private:
 	Mat4 inertia_0;
 	//Mat4 inversInertia;
 	void computeI_0();
-	void updatePoints();
 	Vec3 getAcceleration();
 };
 

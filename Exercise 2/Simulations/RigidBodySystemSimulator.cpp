@@ -2,8 +2,6 @@
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
-	//Test
-	addRigidBody(Vec3(0,0,0),Vec3(1,1,1),1);
 }
 
 const char * RigidBodySystemSimulator::getTestCasesStr()
@@ -48,11 +46,11 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
 	// TODO implement
-	applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0));
+	// applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0));
 	for (int i = 0; i < getNumberOfRigidBodies(); i++) {
-		//rigidbodies.at(i).addForce(Vec3(0.5f,0.5f,0.2f));
-		rigidbodies.at(i).simulateRotation(timeStep);
+		// rigidbodies.at(i).addForce(Vec3(0.5f,0.5f,0.2f));
 		rigidbodies.at(i).simulatePosition(timeStep);
+		rigidbodies.at(i).simulateRotation(timeStep);
 		rigidbodies.at(i).clearForces();
 	}
 }
@@ -95,13 +93,12 @@ void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 {
 	RigidBody& body = rigidbodies.at(i);
 	//body.addForce(force + cross(force, loc - body.position));
-	body.addAngularForce(cross(force, loc - body.position));
+	body.addAngularForce(cross(loc - body.position, force));
 	body.addLinearForce(force);
 }
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
 {
-	//Vec3 eulerTest = Vec3(0.15,0.15,0);
 	rigidbodies.push_back(RigidBody(position, size, Quat(), mass));
 }
 

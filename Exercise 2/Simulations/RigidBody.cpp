@@ -24,60 +24,6 @@ RigidBody::RigidBody(Vec3 position, Vec3 size, Quat orientation, float mass)
 	this->orientation = orientation;
 	this->mass = mass;
 	computeI_0();
-
-	// Calculate all eight points from center of mass using size
-	this->initPoints.push_back(Vec3(
-		-1.0 / 2.0 * size.x,
-		-1.0 / 2.0 * size.y,
-		-1.0 / 2.0 * size.z
-	));
-
-	this->initPoints.push_back(Vec3(
-		-1.0 / 2.0 * size.x,
-		-1.0 / 2.0 * size.y,
-		+1.0 / 2.0 * size.z
-	));
-
-	this->initPoints.push_back(Vec3(
-		-1.0 / 2.0 * size.x,
-		+1.0 / 2.0 * size.y,
-		-1.0 / 2.0 * size.z
-	));
-
-	this->initPoints.push_back(Vec3(
-		-1.0 / 2.0 * size.x,
-		+1.0 / 2.0 * size.y,
-		+1.0 / 2.0 * size.z
-	));
-	
-	this->initPoints.push_back(Vec3(
-		+1.0 / 2.0 * size.x,
-		-1.0 / 2.0 * size.y,
-		-1.0 / 2.0 * size.z
-	));
-	
-	this->initPoints.push_back(Vec3(
-		+1.0 / 2.0 * size.x,
-		-1.0 / 2.0 * size.y,
-		+1.0 / 2.0 * size.z
-	));
-	
-	this->initPoints.push_back(Vec3(
-		+1.0 / 2.0 * size.x,
-		+1.0 / 2.0 * size.y,
-		-1.0 / 2.0 * size.z
-	));
-
-	this->initPoints.push_back(Vec3(
-		+1.0 / 2.0 * size.x,
-		+1.0 / 2.0 * size.y,
-		+1.0 / 2.0 * size.z
-	));
-	std::cout << "Setting of initial points...\n";
-	for (int i = 0; i < 8; i++) {
-		std::cout << "Point " << i+1 << ": (" << initPoints.at(i).x << ", " << initPoints[i].y << ", " << initPoints[i].z << ")\n";
-	}
-	std::cout << "\n\n";
 }
 
 void RigidBody::clearForces()
@@ -133,11 +79,10 @@ void RigidBody::computeI_0() {
 	mat.value[1][1] = double((1.0 / 12.0)*mass*(w*w + d * d));
 	mat.value[2][2] = double((1.0 / 12.0)*mass*(w*w + h * h));
 	mat.value[3][3] = 1;
-	inertia_0 = mat;//TODO inverse?
+	inertia_0 = mat;
 }
 
 void RigidBody::simulatePosition(float timestep) {
-	//TODO copy exercise 1 stuff
 	position = position + linearVelocity * timestep;
 	linearVelocity = linearVelocity + getAcceleration() * timestep;
 }
@@ -146,16 +91,11 @@ void RigidBody::simulateRotation(float timestep) {
 	//updatePoints();
 
 	//1. calculate forces & convert them to torque q
-	Vec3 q = Vec3(0, 0, 0);
-	q = angularForce;
-	//gp-lecture03-rigid-bodies-2D.pdf page 24
-	//TODO foreach point in rigidbody
-	// q += point cross force
+	Vec3 q = angularForce;
 
 	//2.  Integrate the orientation r using the angular velocity w
-	Quat w = Quat(angularVelocity.x,angularVelocity.y,angularVelocity.z,0);//TODO check 0 position gp-lecture04-orientation.pdf page 25
-	Quat test = w.operator*(orientation);
-	orientation = orientation + (timestep / 2) * w * orientation;
+	Quat w = Quat(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);//TODO check 0 position gp-lecture04-orientation.pdf page 25
+	orientation = orientation + (timestep / 2.0) * w * orientation;
 
 	//3.  Integrate angular momentum L
 	angularMomentum = angularMomentum + timestep * q;
@@ -164,7 +104,7 @@ void RigidBody::simulateRotation(float timestep) {
 	//Todo check dimensions of inverse inertia
 	Mat4 rot = getRotationMatrix();
 	Mat4 rot_t = getRotationMatrix();
-	Mat4 inertia_0_inv = inertia_0.inverse();//TODO why NAN?
+	Mat4 inertia_0_inv = inertia_0.inverse();
 	rot_t.transpose();
 
 	Mat4 inversInertia = rot * inertia_0_inv * rot_t;
@@ -173,19 +113,6 @@ void RigidBody::simulateRotation(float timestep) {
 	angularVelocity = inversInertia * angularMomentum;
 
 	//6.  Update the World Space positions of the Points based on the new orientation r
-}
-
-void RigidBody::updatePoints() {
-	points.clear();
-	for (int i = 0; i < 8; i++) {
-		points.push_back(getWorldMatrix() * initPoints[i]);
-	}
-
-	/*std::cout << "Setting of current points...\n";
-	for (int i = 0; i < 8; i++) {
-		std::cout << "Point " << i + 1 << ": (" << points.at(i).x << ", " << points[i].y << ", " << points[i].z << ")\n";
-	}
-	std::cout << "\n\n";*/
 }
 
 Vec3 RigidBody::getAcceleration()
