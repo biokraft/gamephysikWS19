@@ -11,11 +11,15 @@ RigidBody::~RigidBody()
 
 RigidBody::RigidBody(Vec3 position, Vec3 size, Vec3 linearVelocity, Vec3 angularVelocity, Vec3 force, Quat orientation, float mass)
 {
+	//Only Boxes -> Center of Mass always (0,0,0)
 	this->position = position;
 	this->size = size;
 	this->linearVelocity = linearVelocity;
 	this->angularVelocity = angularVelocity;
 	this->force = force;
+	if (orientation.w == 0 && orientation.x == 0 && orientation.y == 0 && orientation.z == 0) {
+		orientation.w = 1;
+	}
 	this->orientation = orientation;
 	this->mass = mass;
 	computeI_0();
@@ -67,6 +71,7 @@ void RigidBody::computeI_0() {
 	mat.value[0][0] = double((1.0 / 12.0)*mass*(h*h + d * d));
 	mat.value[1][1] = double((1.0 / 12.0)*mass*(w*w + d * d));
 	mat.value[2][2] = double((1.0 / 12.0)*mass*(w*w + h * h));
+	mat.value[3][3] = 1;
 	inertia_0 = mat;//TODO inverse?
 }
 
@@ -78,12 +83,14 @@ void RigidBody::simulateRotation(float timestep) {
 
 	//1. calculate forces & convert them to torque q
 	Vec3 q = Vec3();
+	//gp-lecture03-rigid-bodies-2D.pdf page 24
 	//TODO foreach point in rigidbody
 	// q += point cross force
 
 	//2.  Integrate the orientation r using the angular velocity w
 	Quat w = Quat(angularVelocity.x,angularVelocity.y,angularVelocity.z,0);//TODO check 0 position gp-lecture04-orientation.pdf page 25
-	orientation = orientation + (timestep / 2) * w * orientation; 
+	Quat test = w.operator*(orientation);
+	orientation = orientation + (timestep / 2) * w * orientation;
 
 	//3.  Integrate angular momentum L
 	angularMomentum = angularMomentum + timestep * q;
