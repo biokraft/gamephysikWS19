@@ -28,7 +28,7 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 {
 	for (int i = 0; i < getNumberOfRigidBodies(); i++)
 	{
-		DUC->setUpLighting(Vec3(), 0.4*Vec3(1, 1, 1), 100, Vec3(1, 1, 1));
+		DUC->setUpLighting(Vec3(), 0.4*Vec3(1, 1, 1), 100, Vec3(0.5, 0.5, 0.5));
 		DUC->drawRigidBody(rigidbodies.at(i).getWorldMatrix());
 		//DUC->drawSphere(getPositionOfMassPoint(i), Vec3(0.05f, 0.05f, 0.05f));
 	}
@@ -48,10 +48,12 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
 	// TODO implement
+	applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0));
 	for (int i = 0; i < getNumberOfRigidBodies(); i++) {
 		//rigidbodies.at(i).addForce(Vec3(0.5f,0.5f,0.2f));
 		rigidbodies.at(i).simulateRotation(timeStep);
-		//rigidbodies.at(i).clearForces();
+		rigidbodies.at(i).simulatePosition(timeStep);
+		rigidbodies.at(i).clearForces();
 	}
 }
 
@@ -92,13 +94,15 @@ Vec3 RigidBodySystemSimulator::getAngularVelocityOfRigidBody(int i)
 void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 {
 	RigidBody& body = rigidbodies.at(i);
-	body.addForce(force + cross(force, loc - body.position));
+	//body.addForce(force + cross(force, loc - body.position));
+	body.addAngularForce(cross(force, loc - body.position));
+	body.addLinearForce(force);
 }
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
 {
 	//Vec3 eulerTest = Vec3(0.15,0.15,0);
-	rigidbodies.push_back(RigidBody(position, size, Vec3(), Vec3(), Vec3(), Quat(), mass));
+	rigidbodies.push_back(RigidBody(position, size, Quat(), mass));
 }
 
 void RigidBodySystemSimulator::setOrientationOf(int i, Quat orientation)

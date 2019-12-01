@@ -7,9 +7,10 @@ class RigidBody
 public:
 	RigidBody();
 	~RigidBody();
-	RigidBody(Vec3 position, Vec3 size, Vec3 linear_velocity, Vec3 angularVelocity, Vec3 force, Quat orientation, float mass);
+	RigidBody(Vec3 position, Vec3 size, Quat orientation, float mass);
 	void clearForces();
-	void addForce(Vec3 force);
+	void addLinearForce(Vec3 force);
+	void addAngularForce(Vec3 force);
 	void simulateRotation(float timestep);
 	void simulatePosition(float timestep);
 	Mat4 getWorldMatrix();
@@ -24,7 +25,8 @@ public:
 	Vec3 size;
 	Vec3 linearVelocity;
 	Vec3 angularVelocity;
-	Vec3 force;
+	Vec3 linearForce;
+	Vec3 angularForce;
 	Quat orientation;
 	float mass;
 private:
@@ -33,5 +35,6 @@ private:
 	//Mat4 inversInertia;
 	void computeI_0();
 	void updatePoints();
+	Vec3 getAcceleration();
 };
 

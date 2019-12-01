@@ -9,14 +9,15 @@ RigidBody::~RigidBody()
 {
 }
 
-RigidBody::RigidBody(Vec3 position, Vec3 size, Vec3 linearVelocity, Vec3 angularVelocity, Vec3 force, Quat orientation, float mass)
+RigidBody::RigidBody(Vec3 position, Vec3 size, Quat orientation, float mass)
 {
 	//Only Boxes -> Center of Mass always (0,0,0)
 	this->position = position;
 	this->size = size;
-	this->linearVelocity = linearVelocity;
-	this->angularVelocity = angularVelocity;
-	this->force = force;
+	this->linearVelocity = Vec3();
+	this->angularVelocity = Vec3();
+	this->linearForce = Vec3();
+	this->angularForce = Vec3();
 	if (orientation.w == 0 && orientation.x == 0 && orientation.y == 0 && orientation.z == 0) {
 		orientation.w = 1;
 	}
@@ -81,12 +82,18 @@ RigidBody::RigidBody(Vec3 position, Vec3 size, Vec3 linearVelocity, Vec3 angular
 
 void RigidBody::clearForces()
 {
-	force = Vec3(0, 0, 0);
+	angularForce = Vec3(0, 0, 0);
+	linearForce = Vec3(0, 0, 0);
 }
 
-void RigidBody::addForce(Vec3 additionalForce)
+void RigidBody::addAngularForce(Vec3 additionalForce)
 {
-	force += additionalForce;
+	angularForce += additionalForce;
+}
+
+void RigidBody::addLinearForce(Vec3 additionalForce)
+{
+	linearForce += additionalForce;
 }
 
 Mat4 RigidBody::getWorldMatrix()
@@ -131,13 +138,16 @@ void RigidBody::computeI_0() {
 
 void RigidBody::simulatePosition(float timestep) {
 	//TODO copy exercise 1 stuff
+	position = position + linearVelocity * timestep;
+	linearVelocity = linearVelocity + getAcceleration() * timestep;
 }
 
 void RigidBody::simulateRotation(float timestep) {
-	updatePoints();
+	//updatePoints();
 
 	//1. calculate forces & convert them to torque q
-	Vec3 q = Vec3(1.0, 1.0, 0.0);
+	Vec3 q = Vec3(0, 0, 0);
+	q = angularForce;
 	//gp-lecture03-rigid-bodies-2D.pdf page 24
 	//TODO foreach point in rigidbody
 	// q += point cross force
@@ -176,6 +186,11 @@ void RigidBody::updatePoints() {
 		std::cout << "Point " << i + 1 << ": (" << points.at(i).x << ", " << points[i].y << ", " << points[i].z << ")\n";
 	}
 	std::cout << "\n\n";*/
+}
+
+Vec3 RigidBody::getAcceleration()
+{
+	return linearForce / (mass);
 }
 
 
