@@ -75,10 +75,10 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 		worldViewInv = worldViewInv.inverse();
 		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
 		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
-		float inputScale = 0.5;// 0.000025f;
+		float inputScale = 0.00005f;
 		inputWorld = inputWorld * inputScale;
 		for (int i = 0; i < rigidbodies.size(); i++) {
-			applyForceOnBody(i,Vec3(0,0.01,0),inputWorld);//random force
+			applyForceOnBody(i,Vec3(0,1,0),inputWorld);//random force
 		}
 	}
 }
@@ -209,7 +209,7 @@ void RigidBodySystemSimulator::setBouncinessOf(int i, float bounciness)
 }
 
 void RigidBodySystemSimulator::setupDemo1() {
-	Quat rot = Quat(0.707, 0.0, 0.0, 0.707);
+	Quat rot = Quat(0.0, 0.0, 0.707, 0.707);
 	addRigidBody(Vec3(0, 0, 0), Vec3(1.0, 0.6, 0.5), 2);
 	setOrientationOf(0, rot);
 	applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1.0, 1.0, 0));
@@ -221,7 +221,7 @@ void RigidBodySystemSimulator::setupDemo1() {
 }
 
 void RigidBodySystemSimulator::setupDemo2() {
-	Quat rot = Quat(0.707, 0.0, 0.0, 0.707);
+	Quat rot = Quat(0.0, 0.0, 0.707, 0.707);
 	addRigidBody(Vec3(0, 0, 0), Vec3(1.0, 0.6, 0.5), 2);
 	setOrientationOf(0, rot);
 	}
