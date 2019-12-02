@@ -1,12 +1,15 @@
 #include "RigidBodySystemSimulator.h"
+#include <set>
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
 	m_iTestCase = TESTCASEUSEDTORUNTEST;
 	addRigidBody(Vec3(-0.1f, -0.2f, 0.1f), Vec3(0.4f, 0.2f, 0.2f), 100.0f);
+	//setBouncinessOf(0, 0.0f);
 
 	addRigidBody(Vec3(0.0f, 0.2f, 0.0f), Vec3(0.4f, 0.2f, 0.2f), 100.0);
 	setOrientationOf(1, Quat(Vec3(0.0f, 0.0f, 1.0f), (float)(M_PI)*0.25f));
+	//setBouncinessOf(1, 1.0f);
 	setVelocityOf(1, Vec3(0.0f, -0.1f, 0.05f));
 	applyForceOnBody(0, Vec3(0.0, 0.0f, 0.0), Vec3(0, 0, 200));
 }
@@ -52,7 +55,8 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
-	// applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0));
+	std::set<set<int>> finishedCollisions;
+	// applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0)); 
 	for (int i = 0; i < getNumberOfRigidBodies(); i++) {
 		// rigidbodies.at(i).addForce(Vec3(0.5f,0.5f,0.2f));
 		RigidBody *a = &rigidbodies.at(i);
@@ -64,6 +68,11 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 			RigidBody *b = &rigidbodies.at(j);
 			CollisionInfo info = checkCollisionSAT(a->getWorldMatrix(), b->getWorldMatrix());
 			if (info.isValid) {
+				//if collision was already handled, skip it
+				set<int> values = { i, j };
+				if (finishedCollisions.find(values) != finishedCollisions.end()) {
+					continue;
+				}
 				//v_i = v_cm + w X x_i
 				Vec3 v1 = a->linearVelocity + cross(a->angularVelocity, info.collisionPointWorld);
 				Vec3 v2 = b->linearVelocity + cross(b->angularVelocity, info.collisionPointWorld);
@@ -74,21 +83,26 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 					continue;
 				}
 
-				double impulse = calculateImpulse(vRel,info.normalWorld,info.collisionPointWorld,a,b);
+				double impulseA = calculateImpulse(vRel,info.normalWorld,info.collisionPointWorld,a,b);
+				double impulseB = calculateImpulse(vRel, info.normalWorld, info.collisionPointWorld, b, a);
+
 
 				//update velocities
-				a->linearVelocity = a->linearVelocity + impulse * info.normalWorld / a->mass;
-				b->linearVelocity = b->linearVelocity - impulse * info.normalWorld / b->mass;
+				a->linearVelocity = a->linearVelocity + impulseA * info.normalWorld / a->mass;
+				b->linearVelocity = b->linearVelocity - impulseB * info.normalWorld / b->mass;
 			
-				a->angularMomentum = a->angularMomentum + cross(a->position,impulse*info.normalWorld);
-				b->angularMomentum = b->angularMomentum - cross(b->position, impulse*info.normalWorld);
+				a->angularMomentum = a->angularMomentum + cross(a->position,impulseA*info.normalWorld);
+				b->angularMomentum = b->angularMomentum - cross(b->position, impulseB*info.normalWorld);
+
+				//cache finished collisions
+				finishedCollisions.insert(values);
 			}
 		}
 	}
 }
 
 double RigidBodySystemSimulator::calculateImpulse(Vec3 vRel, Vec3 normal,Vec3 point, RigidBody *a, RigidBody *b) {
-	float c = a->bounciness * b->bounciness;
+	float c = a->bounciness;
 	double numerator = -1*(1 + c)*dot(vRel,normal);
 	double denominator_1 = 1 / a->mass + 1 / b->mass;
 	Vec3 xA = point - a->position;
@@ -157,4 +171,9 @@ void RigidBodySystemSimulator::setOrientationOf(int i, Quat orientation)
 void RigidBodySystemSimulator::setVelocityOf(int i, Vec3 velocity)
 {
 	rigidbodies.at(i).linearVelocity = velocity;
+}
+
+void RigidBodySystemSimulator::setBouncinessOf(int i, float bounciness)
+{
+	rigidbodies.at(i).setBounciness(bounciness);
 }

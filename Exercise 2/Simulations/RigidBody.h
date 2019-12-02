@@ -13,6 +13,7 @@ public:
 		Vec3 f;
 		Vec3 p;
 	};
+	void setBounciness(float bounciness);
 	void clearForces();
 	void addLinearForce(Vec3 force);
 	void addAngularForce(Vec3 force);

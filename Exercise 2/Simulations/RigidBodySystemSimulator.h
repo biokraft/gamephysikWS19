@@ -33,6 +33,7 @@ public:
 	void addRigidBody(Vec3 position, Vec3 size, int mass);
 	void setOrientationOf(int i,Quat orientation);
 	void setVelocityOf(int i, Vec3 velocity);
+	void setBouncinessOf(int i, float bounciness);
 
 private:
 	// Attributes

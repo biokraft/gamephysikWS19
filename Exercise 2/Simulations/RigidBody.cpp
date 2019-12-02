@@ -23,8 +23,13 @@ RigidBody::RigidBody(Vec3 position, Vec3 size, Quat orientation, float mass)
 	}
 	this->orientation = orientation;
 	this->mass = mass;
-	this->bounciness = 1;
+	this->bounciness = 0;
 	computeI_0();
+}
+
+void RigidBody::setBounciness(float bounciness)
+{
+	this->bounciness = bounciness;
 }
 
 void RigidBody::clearForces()
