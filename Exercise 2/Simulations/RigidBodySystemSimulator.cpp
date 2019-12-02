@@ -13,7 +13,6 @@ const char * RigidBodySystemSimulator::getTestCasesStr()
 void RigidBodySystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
-	// TODO implement
 }
 
 void RigidBodySystemSimulator::reset()
@@ -31,7 +30,6 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 		DUC->drawRigidBody(rigidbodies.at(i).getWorldMatrix());
 		//DUC->drawSphere(getPositionOfMassPoint(i), Vec3(0.05f, 0.05f, 0.05f));
 	}
-	// TODO implement
 }
 
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
@@ -80,21 +78,13 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 		float inputScale = 0.5;// 0.000025f;
 		inputWorld = inputWorld * inputScale;
 		for (int i = 0; i < rigidbodies.size(); i++) {
-			applyForceOnBody(i,Vec3(0,1,0),inputWorld);//random force
+			applyForceOnBody(i,Vec3(0,0.01,0),inputWorld);//random force
 		}
 	}
-	// TODO implement
 }
 
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
-	if (timeStep == 0.002f) {
-		std::cout << "Linear velocity of rigidbody: " << rigidbodies.at(0).linearVelocity << "\n";
-		std::cout << "Angular velocity of rigidbody: " << rigidbodies.at(0).angularVelocity << "\n";
-		Vec3 worldSpaceVelocity = getLinearVelocityOfRigidBody(0) + cross(getAngularVelocityOfRigidBody(0), Vec3(0.3, 0.5, 0.25));
-		std::cout << "World space velocity of point (0.3, 0.5, 0.25): " << worldSpaceVelocity << "\n";
-	}
-
 	std::set<set<int>> finishedCollisions;
 	// applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0)); 
 	for (int i = 0; i < getNumberOfRigidBodies(); i++) {
@@ -224,12 +214,17 @@ void RigidBodySystemSimulator::setupDemo1() {
 	setOrientationOf(0, rot);
 	applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1.0, 1.0, 0));
 	simulateTimestep(2.0f);
-	simulateTimestep(0.002f);
+	std::cout << "Linear velocity of rigidbody: " << rigidbodies.at(0).linearVelocity << "\n";
+	std::cout << "Angular velocity of rigidbody: " << rigidbodies.at(0).angularVelocity << "\n";
+	Vec3 worldSpaceVelocity = getLinearVelocityOfRigidBody(0) + cross(getAngularVelocityOfRigidBody(0), Vec3(0.3, 0.5, 0.25));
+	std::cout << "World space velocity of point (0.3, 0.5, 0.25): " << worldSpaceVelocity << "\n";
 }
 
 void RigidBodySystemSimulator::setupDemo2() {
-	addRigidBody(Vec3(0, 0, 0), Vec3(0.4f, 0.2f, 0.2f), 100.0f);
-}
+	Quat rot = Quat(0.707, 0.0, 0.0, 0.707);
+	addRigidBody(Vec3(0, 0, 0), Vec3(1.0, 0.6, 0.5), 2);
+	setOrientationOf(0, rot);
+	}
 
 void RigidBodySystemSimulator::setupDemo3() {
 	Quat rot = Quat(0.854f, 0.354f, -0.146f, 0.354f);

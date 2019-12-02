@@ -251,6 +251,27 @@ void CALLBACK OnFrameMove( double dTime, float fElapsedTime, void* pUserContext 
 		g_pSimulator->notifyCaseChanged(g_iTestCase);
 		g_pSimulator->initUI(g_pDUC);
 		g_iPreTestCase = g_iTestCase;
+
+		// OWN CODE START
+		switch (g_iTestCase)
+		{
+		case 0:
+			g_fTimestep = 2.0f;
+			break;
+		case 1:
+			g_fTimestep = 0.01f;
+			break;
+		case 2:
+			g_fTimestep = 0.001f;
+			break;
+		case 3:
+			g_fTimestep = 0.001f;
+			break;
+		default:
+			break;
+		}
+		// OWN CODE END
+
 	}
 	if(!g_bSimulateByStep){
 #ifdef ADAPTIVESTEP
