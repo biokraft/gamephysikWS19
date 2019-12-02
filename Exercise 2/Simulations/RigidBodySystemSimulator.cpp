@@ -3,15 +3,6 @@
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
-	m_iTestCase = TESTCASEUSEDTORUNTEST;
-	addRigidBody(Vec3(-0.1f, -0.2f, 0.1f), Vec3(0.4f, 0.2f, 0.2f), 100.0f);
-	//setBouncinessOf(0, 0.0f);
-
-	addRigidBody(Vec3(0.0f, 0.2f, 0.0f), Vec3(0.4f, 0.2f, 0.2f), 100.0);
-	setOrientationOf(1, Quat(Vec3(0.0f, 0.0f, 1.0f), (float)(M_PI)*0.25f));
-	//setBouncinessOf(1, 1.0f);
-	setVelocityOf(1, Vec3(0.0f, -0.1f, 0.05f));
-	applyForceOnBody(0, Vec3(0.0, 0.0f, 0.0), Vec3(0, 0, 200));
 }
 
 const char * RigidBodySystemSimulator::getTestCasesStr()
@@ -45,11 +36,53 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
 {
-	// TODO implement
+	m_iTestCase = testCase;
+	rigidbodies.clear();
+	switch (m_iTestCase)
+	{
+	case 0:
+		cout << "Demo1!\n";
+		setupDemo1();
+		break;
+	case 1:
+		cout << "Demo2!\n";
+		setupDemo2();
+		break;
+	case 2:
+		cout << "Demo3!\n";
+		setupDemo3();
+		break;
+	case 3:
+		cout << "Demo4!\n";
+		setupDemo4();
+		break;
+	default: 
+		cout << "Empty Test!\n";
+		break;
+	}
 }
 
 void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 {
+	if (m_iTestCase != 1)
+	{
+		return;
+	}
+	Point2D mouseDiff;
+	mouseDiff.x = m_trackmouse.x - m_oldtrackmouse.x;
+	mouseDiff.y = m_trackmouse.y - m_oldtrackmouse.y;
+	if (mouseDiff.x != 0 || mouseDiff.y != 0)
+	{
+		Mat4 worldViewInv = Mat4(DUC->g_camera.GetWorldMatrix() * DUC->g_camera.GetViewMatrix());
+		worldViewInv = worldViewInv.inverse();
+		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
+		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
+		float inputScale = 0.5;// 0.000025f;
+		inputWorld = inputWorld * inputScale;
+		for (int i = 0; i < rigidbodies.size(); i++) {
+			applyForceOnBody(i,inputWorld,Vec3(1,1,0));//random force
+		}
+	}
 	// TODO implement
 }
 
@@ -71,7 +104,7 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 				//if collision was already handled, skip it
 				set<int> values = { i, j };
 				if (finishedCollisions.find(values) != finishedCollisions.end()) {
-					continue;
+					//continue;
 				}
 				//v_i = v_cm + w X x_i
 				Vec3 v1 = a->linearVelocity + cross(a->angularVelocity, info.collisionPointWorld);
@@ -176,4 +209,27 @@ void RigidBodySystemSimulator::setVelocityOf(int i, Vec3 velocity)
 void RigidBodySystemSimulator::setBouncinessOf(int i, float bounciness)
 {
 	rigidbodies.at(i).setBounciness(bounciness);
+}
+
+void RigidBodySystemSimulator::setupDemo1() {
+
+}
+
+void RigidBodySystemSimulator::setupDemo2() {
+	addRigidBody(Vec3(0, 0, 0), Vec3(0.4f, 0.2f, 0.2f), 100.0f);
+}
+
+void RigidBodySystemSimulator::setupDemo3() {
+	Quat rot = Quat(0.854f, 0.354f, -0.146f, 0.354f);
+
+	addRigidBody(Vec3(-0.1f, -0.2f, 0.1f), Vec3(0.4f, 0.2f, 0.2f), 100.0f);
+
+	addRigidBody(Vec3(0.0f, 0.2f, 0.0f), Vec3(0.4f, 0.2f, 0.2f), 100.0);
+	setOrientationOf(1, rot);
+	setVelocityOf(1, Vec3(0.0f, -0.1f, 0.05f));
+	//applyForceOnBody(0, Vec3(0.0, 0.0f, 0.0), Vec3(0, 0, 200));
+}
+
+void RigidBodySystemSimulator::setupDemo4() {
+
 }

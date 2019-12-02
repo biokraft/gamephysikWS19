@@ -50,6 +50,11 @@ private:
 	int count = 0;
 	// Vectors
 	vector<RigidBody> rigidbodies;
+	void setupDemo1();
+	void setupDemo2();
+	void setupDemo3();
+	void setupDemo4();
+
 	double calculateImpulse(Vec3 vRel,Vec3 normal,Vec3 point,RigidBody *a,RigidBody *b);
 	};
 #endif
