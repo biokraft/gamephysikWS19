@@ -111,10 +111,7 @@ void RigidBody::simulateRotation(float timestep) {
 
 	//2.  Integrate the orientation r using the angular velocity w
 	Quat w = Quat(angularVelocity.x, angularVelocity.y, angularVelocity.z,0);//TODO check 0 position gp-lecture04-orientation.pdf page 25
-	//Mat4 wMat;
-	//wMat.initRotationXYZ(angularVelocity.x, angularVelocity.y, angularVelocity.z);
-	//w = Quat( wMat);
-	orientation = orientation + (w * orientation)*(timestep / 2.0);
+	orientation = (orientation + (w * orientation)*(timestep / 2.0)).unit();
 
 	//3.  Integrate angular momentum L
 	angularMomentum = angularMomentum + timestep * q;
