@@ -239,9 +239,16 @@ void RigidBodySystemSimulator::setupDemo3() {
 	addRigidBody(Vec3(0.0f, 0.2f, 0.0f), Vec3(0.4f, 0.2f, 0.2f), 100.0);
 	setOrientationOf(1, rot);
 	setVelocityOf(1, Vec3(0.0f, -0.1f, 0.05f));
-	//applyForceOnBody(0, Vec3(0.0, 0.0f, 0.0), Vec3(0, 0, 200));
 }
 
 void RigidBodySystemSimulator::setupDemo4() {
+	addRigidBody(Vec3(0.0f, 0.0f, 0.3f), Vec3(0.1f, 0.4f, 0.1f), 1);
+	addRigidBody(Vec3(-0.15f, 0.0f, 0.3f), Vec3(0.1f, 0.4f, 0.1f), 1);
+	addRigidBody(Vec3(0.15f, 0.0f, 0.3f), Vec3(0.1f, 0.4f, 0.1f), 1);
+	addRigidBody(Vec3(-0.075f, 0.0f, 0.15f), Vec3(0.1f, 0.4f, 0.1f), 1);
+	addRigidBody(Vec3(0.075f, 0.0f, 0.15f), Vec3(0.1f, 0.4f, 0.1f), 1);
+	addRigidBody(Vec3(0.0f, 0.0f, 0.0f), Vec3(0.1f, 0.4f, 0.1f), 1);
 
+	addRigidBody(Vec3(0.5f, 0, 0.2f), Vec3(0.1f, 0.1f, 0.1f), 1);
+	applyForceOnBody(getNumberOfRigidBodies() - 1, Vec3(0.55f, 0.0f, 0.2f), Vec3(-3000, 0, 0));
 }

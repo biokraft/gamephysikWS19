@@ -25,6 +25,8 @@ public:
 	Mat4 getScaleMatrix();
 	Mat4 getTranslationMatrix();
 	Mat4 getCurrentInertia();
+	void setGravity(bool gravityEnabled);
+	void setFixed(bool isFixed);
 
 	Vec3 position;
 	vector<Force> forces;
@@ -38,6 +40,8 @@ public:
 	Mat4 inversInertia;
 	float mass;
 	float bounciness;
+	bool gravity = false;
+	bool isFixed = false;
 private:
 	Mat4 inertia_0;
 	//Mat4 inversInertia;

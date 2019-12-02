@@ -80,6 +80,16 @@ Mat4 RigidBody::getCurrentInertia()
 	return getRotationMatrix() * inertia_0 * getRotationMatrix().inverse();
 }
 
+void RigidBody::setGravity(bool gravityEnabled)
+{
+	this->gravity = gravityEnabled;
+}
+
+void RigidBody::setFixed(bool isFixed)
+{
+	this->isFixed = isFixed;
+}
+
 void RigidBody::computeI_0() {
 	Mat4 mat = Mat4();
 	//https://en.wikipedia.org/wiki/List_of_moments_of_inertia
@@ -94,11 +104,17 @@ void RigidBody::computeI_0() {
 }
 
 void RigidBody::simulatePosition(float timestep) {
+	if (isFixed) return;
+
+	if (gravity) {
+		linearForce += Vec3(0, -9.81f, 0);
+	}
 	position = position + linearVelocity * timestep;
 	linearVelocity = linearVelocity + getAcceleration() * timestep;
 }
 
 void RigidBody::simulateRotation(float timestep) {
+	if (isFixed) return;
 	//updatePoints();
 
 	//1. calculate forces & convert them to torque q
