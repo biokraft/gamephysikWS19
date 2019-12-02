@@ -88,6 +88,13 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
+	if (timeStep == 0.002f) {
+		std::cout << "Linear velocity of rigidbody: " << rigidbodies.at(0).linearVelocity << "\n";
+		std::cout << "Angular velocity of rigidbody: " << rigidbodies.at(0).angularVelocity << "\n";
+		Vec3 worldSpaceVelocity = getLinearVelocityOfRigidBody(0) + cross(getAngularVelocityOfRigidBody(0), Vec3(0.3, 0.5, 0.25));
+		std::cout << "World space velocity of point (0.3, 0.5, 0.25): " << worldSpaceVelocity << "\n";
+	}
+
 	std::set<set<int>> finishedCollisions;
 	// applyForceOnBody(0,Vec3(0.3, 0.5, 0.25),Vec3(1, 1, 0)); 
 	for (int i = 0; i < getNumberOfRigidBodies(); i++) {
@@ -104,7 +111,7 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 				//if collision was already handled, skip it
 				set<int> values = { i, j };
 				if (finishedCollisions.find(values) != finishedCollisions.end()) {
-					//continue;
+					continue;
 				}
 				//v_i = v_cm + w X x_i
 				Vec3 v1 = a->linearVelocity + cross(a->angularVelocity, info.collisionPointWorld);
@@ -212,7 +219,12 @@ void RigidBodySystemSimulator::setBouncinessOf(int i, float bounciness)
 }
 
 void RigidBodySystemSimulator::setupDemo1() {
-
+	Quat rot = Quat(0.707, 0.0, 0.0, 0.707);
+	addRigidBody(Vec3(0, 0, 0), Vec3(1.0, 0.6, 0.5), 2);
+	setOrientationOf(0, rot);
+	applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1.0, 1.0, 0));
+	simulateTimestep(2.0f);
+	simulateTimestep(0.002f);
 }
 
 void RigidBodySystemSimulator::setupDemo2() {
