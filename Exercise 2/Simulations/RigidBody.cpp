@@ -23,6 +23,7 @@ RigidBody::RigidBody(Vec3 position, Vec3 size, Quat orientation, float mass)
 	}
 	this->orientation = orientation;
 	this->mass = mass;
+	this->bounciness = 1;
 	computeI_0();
 }
 
@@ -30,6 +31,7 @@ void RigidBody::clearForces()
 {
 	angularForce = Vec3(0, 0, 0);
 	linearForce = Vec3(0, 0, 0);
+	forces.clear();
 }
 
 void RigidBody::addAngularForce(Vec3 additionalForce)
@@ -40,6 +42,10 @@ void RigidBody::addAngularForce(Vec3 additionalForce)
 void RigidBody::addLinearForce(Vec3 additionalForce)
 {
 	linearForce += additionalForce;
+}
+
+void RigidBody::addForce(Force force) {
+	forces.push_back(force);
 }
 
 Mat4 RigidBody::getWorldMatrix()
@@ -91,11 +97,17 @@ void RigidBody::simulateRotation(float timestep) {
 	//updatePoints();
 
 	//1. calculate forces & convert them to torque q
-	Vec3 q = angularForce;
+	//Vec3 q = angularForce;
+	Vec3 q = Vec3(0, 0, 0);
+	for (int i = 0; i < forces.size(); i++) {
+		q += cross(forces.at(i).p - position, forces.at(i).f);
+		//q += cross(forces.at(i).f,forces.at(i).p - position);
+	}
 
 	//2.  Integrate the orientation r using the angular velocity w
-	Quat w = Quat(0, angularVelocity.x, angularVelocity.y, angularVelocity.z);//TODO check 0 position gp-lecture04-orientation.pdf page 25
-	orientation = orientation + (timestep / 2.0) * w * orientation;
+	Quat w = Quat(angularVelocity.x, angularVelocity.y, angularVelocity.z,0);//TODO check 0 position gp-lecture04-orientation.pdf page 25
+	//w = Quat(angularVelocity);
+	orientation = orientation + (w * orientation)*(timestep / 2.0);
 
 	//3.  Integrate angular momentum L
 	angularMomentum = angularMomentum + timestep * q;
@@ -107,7 +119,7 @@ void RigidBody::simulateRotation(float timestep) {
 	Mat4 inertia_0_inv = inertia_0.inverse();
 	rot_t.transpose();
 
-	Mat4 inversInertia = rot * inertia_0_inv * rot_t;
+	inversInertia = rot * inertia_0_inv * rot_t;
 
 	//5.  Update angular velocity w using I and L
 	angularVelocity = inversInertia * angularMomentum;

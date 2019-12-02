@@ -3,6 +3,7 @@
 #include "Simulator.h"
 //add your header for your rigid body system, for e.g.,
 //#include "rigidBodySystem.h"
+#include "collisionDetect.h"
 #include "RigidBody.h"
 
 #define TESTCASEUSEDTORUNTEST 2
@@ -45,8 +46,9 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
-
+	int count = 0;
 	// Vectors
 	vector<RigidBody> rigidbodies;
+	double calculateImpulse(Vec3 vRel,Vec3 normal,Vec3 point,RigidBody *a,RigidBody *b);
 	};
 #endif
