@@ -43,5 +43,6 @@ private:
 	//Mat4 inversInertia;
 	void computeI_0();
 	Vec3 getAcceleration();
+	Quat QuatMulti(Quat a, Quat b);
 };
 

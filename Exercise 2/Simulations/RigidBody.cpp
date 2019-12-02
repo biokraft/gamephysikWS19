@@ -111,7 +111,9 @@ void RigidBody::simulateRotation(float timestep) {
 
 	//2.  Integrate the orientation r using the angular velocity w
 	Quat w = Quat(angularVelocity.x, angularVelocity.y, angularVelocity.z,0);//TODO check 0 position gp-lecture04-orientation.pdf page 25
-	//w = Quat(angularVelocity);
+	//Mat4 wMat;
+	//wMat.initRotationXYZ(angularVelocity.x, angularVelocity.y, angularVelocity.z);
+	//w = Quat( wMat);
 	orientation = orientation + (w * orientation)*(timestep / 2.0);
 
 	//3.  Integrate angular momentum L
@@ -131,6 +133,7 @@ void RigidBody::simulateRotation(float timestep) {
 
 	//6.  Update the World Space positions of the Points based on the new orientation r
 }
+
 
 Vec3 RigidBody::getAcceleration()
 {

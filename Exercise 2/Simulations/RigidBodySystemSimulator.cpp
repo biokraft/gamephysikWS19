@@ -80,7 +80,7 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 		float inputScale = 0.5;// 0.000025f;
 		inputWorld = inputWorld * inputScale;
 		for (int i = 0; i < rigidbodies.size(); i++) {
-			applyForceOnBody(i,inputWorld,Vec3(1,1,0));//random force
+			applyForceOnBody(i,Vec3(0,1,0),inputWorld);//random force
 		}
 	}
 	// TODO implement
