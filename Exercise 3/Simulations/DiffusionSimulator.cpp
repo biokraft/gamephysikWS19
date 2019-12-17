@@ -12,7 +12,7 @@ DiffusionSimulator::DiffusionSimulator()
 	m_vfMovableObjectPos = Vec3();
 	m_vfMovableObjectFinalPos = Vec3();
 	m_vfRotate = Vec3();
-	// to be implemented
+	// TODO to be implemented
 }
 
 const char * DiffusionSimulator::getTestCasesStr(){
@@ -29,7 +29,7 @@ void DiffusionSimulator::reset(){
 void DiffusionSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
-	// to be implemented
+	// TODO to be implemented
 }
 
 void DiffusionSimulator::notifyCaseChanged(int testCase)
@@ -38,7 +38,7 @@ void DiffusionSimulator::notifyCaseChanged(int testCase)
 	m_vfMovableObjectPos = Vec3(0, 0, 0);
 	m_vfRotate = Vec3(0, 0, 0);
 	//
-	//to be implemented
+	// TODO to be implemented
 	//
 	switch (m_iTestCase)
 	{
@@ -54,29 +54,29 @@ void DiffusionSimulator::notifyCaseChanged(int testCase)
 	}
 }
 
-Grid* DiffusionSimulator::diffuseTemperatureExplicit() {//add your own parameters
+Grid* DiffusionSimulator::diffuseTemperatureExplicit() { // TODO add your own parameters
 	Grid* newT = new Grid();
-	// to be implemented
-	//make sure that the temperature in boundary cells stays zero
+	// TODO to be implemented
+	// make sure that the temperature in boundary cells stays zero
 	return newT;
 }
 
 void setupB(std::vector<Real>& b) {//add your own parameters
-	// to be implemented
-	//set vector B[sizeX*sizeY]
+	// TODO to be implemented
+	// set vector B[sizeX*sizeY]
 	for (int i = 0; i < 25; i++) {
 		b.at(i) = 0;
 	}
 }
 
 void fillT() {//add your own parameters
-	// to be implemented
+	// TODO to be implemented
 	//fill T with solved vector x
 	//make sure that the temperature in boundary cells stays zero
 }
 
 void setupA(SparseMatrix<Real>& A, double factor) {//add your own parameters
-	// to be implemented
+	// TODO to be implemented
 	//setup Matrix A[sizeX*sizeY*sizeZ, sizeX*sizeY*sizeZ]
 	// set with:  A.set_element( index1, index2 , value );
 	// if needed, read with: A(index1, index2);
@@ -87,7 +87,7 @@ void setupA(SparseMatrix<Real>& A, double factor) {//add your own parameters
 }
 
 
-void DiffusionSimulator::diffuseTemperatureImplicit() {//add your own parameters
+void DiffusionSimulator::diffuseTemperatureImplicit() { // TODO add your own parameters
 	// solve A T = b
 	// to be implemented
 	const int N = 25;//N = sizeX*sizeY*sizeZ
@@ -119,7 +119,7 @@ void DiffusionSimulator::diffuseTemperatureImplicit() {//add your own parameters
 
 void DiffusionSimulator::simulateTimestep(float timeStep)
 {
-	// to be implemented
+	// TODO to be implemented
 	// update current setup for each frame
 	switch (m_iTestCase)
 	{
@@ -134,7 +134,7 @@ void DiffusionSimulator::simulateTimestep(float timeStep)
 
 void DiffusionSimulator::drawObjects()
 {
-	// to be implemented
+	// TODO to be implemented
 	//visualization
 }
 

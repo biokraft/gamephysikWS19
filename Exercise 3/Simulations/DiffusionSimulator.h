@@ -4,7 +4,7 @@
 #include "Simulator.h"
 #include "vectorbase.h"
 
-//impement your own grid class for saving grid data
+// TODO impement your own grid class for saving grid data
 class Grid {
 public:
 	// Construtors
@@ -45,7 +45,7 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
-	Grid *T; //save results of every time step
+	Grid *T; // save results of every time step
 };
 
 #endif
