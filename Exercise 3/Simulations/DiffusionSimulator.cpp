@@ -63,8 +63,8 @@ Grid* DiffusionSimulator::diffuseTemperatureExplicit(float timeStep) { // TODO a
 	Grid* newTPlusOne = new Grid();
 	for (int py = 0; py < newT->gridarray.size; py++) {
 		for (int px = 0; px < newT->gridarray[py].size; px++) {
-			if (py > 0 && py < newT->gridarray.size) {
-				if (px > 0 && px < newT->gridarray[py].size) {
+			if (py > 0 && py < newT->gridarray.size) {			// TODO not < size - 1?
+				if (px > 0 && px < newT->gridarray[py].size) {	// (same here)
 					int pointVal = newT->gridarray[py][px];
 					int leftVal = newT->gridarray[py][px-1];
 					int rightVal = newT->gridarray[py][px+1];
@@ -116,8 +116,8 @@ void setupA(SparseMatrix<Real>& A, double factor, float timeStep) {//TODO add yo
 	// ----
 
 	double dx = 1; // delta x; TODO Richtige Werte (Konstante) setzen
-	double dt = timeStep; // delta time; =
-	double alpha = 1; // =
+	double dt = timeStep; // delta time
+	double alpha = 0.1; // TODO alpha = factor?
 
 	double r = alpha * dt / dx * dx;
 
@@ -143,7 +143,7 @@ void DiffusionSimulator::diffuseTemperatureImplicit(float timeStep) { // TODO ad
 	SparseMatrix<Real> *A = new SparseMatrix<Real> (N);
 	std::vector<Real> *b = new std::vector<Real>(N);
 
-	setupA(*A, 0.1);
+	setupA(*A, 0.1, timeStep);
 	setupB(*b);
 
 	// perform solve
@@ -173,10 +173,10 @@ void DiffusionSimulator::simulateTimestep(float timeStep)
 	switch (m_iTestCase)
 	{
 	case 0:
-		T = diffuseTemperatureExplicit();
+		T = diffuseTemperatureExplicit(timeStep);
 		break;
 	case 1:
-		diffuseTemperatureImplicit();
+		diffuseTemperatureImplicit(timeStep);
 		break;
 	}
 }
