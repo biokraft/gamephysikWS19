@@ -9,10 +9,11 @@ class Grid {
 public:
 	// Construtors
 	Grid();
-
+	int m, n; // length = m, width = n
+	std::vector<std::vector<int>> gridarray;
 
 private:
-	// Attributes
+	//Attributes
 };
 
 
@@ -28,14 +29,15 @@ public:
 	void reset();
 	void drawFrame(ID3D11DeviceContext* pd3dImmediateContext);
 	void notifyCaseChanged(int testCase);
+	void fillT();
 	void simulateTimestep(float timeStep);
 	void externalForcesCalculations(float timeElapsed) {};
 	void onClick(int x, int y);
 	void onMouse(int x, int y);
 	// Specific Functions
 	void drawObjects();
-	Grid* diffuseTemperatureExplicit();
-	void diffuseTemperatureImplicit();
+	Grid* diffuseTemperatureExplicit(float timeStep);
+	void diffuseTemperatureImplicit(float timeStep);
 
 private:
 	// Attributes

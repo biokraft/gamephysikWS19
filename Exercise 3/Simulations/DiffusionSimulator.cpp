@@ -54,14 +54,36 @@ void DiffusionSimulator::notifyCaseChanged(int testCase)
 	}
 }
 
-Grid* DiffusionSimulator::diffuseTemperatureExplicit() { // TODO add your own parameters
+Grid* DiffusionSimulator::diffuseTemperatureExplicit(float timeStep) { // TODO add your own parameters
 	Grid* newT = new Grid();
 	// TODO to be implemented
 	// make sure that the temperature in boundary cells stays zero
-	return newT;
+	
+	// ----
+	Grid* newTPlusOne = new Grid();
+	for (int py = 0; py < newT->gridarray.size; py++) {
+		for (int px = 0; px < newT->gridarray[py].size; px++) {
+			if (py > 0 && py < newT->gridarray.size) {
+				if (px > 0 && px < newT->gridarray[py].size) {
+					int pointVal = newT->gridarray[py][px];
+					int leftVal = newT->gridarray[py][px-1];
+					int rightVal = newT->gridarray[py][px+1];
+					int downVal = newT->gridarray[py+1][px];
+					int upVal = newT->gridarray[py-1][px];
+
+					int newPointVal = 0 * downVal - pointVal + upVal;
+					newPointVal += 0 * leftVal - pointVal + rightVal;
+					newPointVal += 0 * upVal - pointVal + downVal;
+					newPointVal += 0 * rightVal - pointVal + leftVal;
+					newT->gridarray[py][px] = newPointVal;
+				}
+			}
+		}
+	}
+	return newTPlusOne;
 }
 
-void setupB(std::vector<Real>& b) {//add your own parameters
+void setupB(std::vector<Real>& b) {// TODO add your own parameters
 	// TODO to be implemented
 	// set vector B[sizeX*sizeY]
 	for (int i = 0; i < 25; i++) {
@@ -69,25 +91,52 @@ void setupB(std::vector<Real>& b) {//add your own parameters
 	}
 }
 
-void fillT() {//add your own parameters
+void DiffusionSimulator::fillT() {// TODO add your own parameters
+	for (int k = 0; k < T->m; k++) {
+		for (int j = 0; j < T->n; j++) {
+			if (k == 0 || j == 0 || k == T->m - 1 || j == T->n - 1)
+				T->gridarray[k][j] = 0;
+		}
+	}
 	// TODO to be implemented
 	//fill T with solved vector x
-	//make sure that the temperature in boundary cells stays zero
+	//make sure that the temperature in boundary cells stays zero (done)
 }
 
-void setupA(SparseMatrix<Real>& A, double factor) {//add your own parameters
+void setupA(SparseMatrix<Real>& A, double factor, float timeStep) {//TODO add your own parameters
 	// TODO to be implemented
 	//setup Matrix A[sizeX*sizeY*sizeZ, sizeX*sizeY*sizeZ]
 	// set with:  A.set_element( index1, index2 , value );
 	// if needed, read with: A(index1, index2);
 	// avoid zero rows in A -> set the diagonal value for boundary cells to 1.0
-	for (int i = 0; i < 25; i++) {
-			A.set_element(i, i, 1); // set diagonal
+
+	//for (int i = 0; i < 25; i++) {
+	//		A.set_element(i, i, 1); // set diagonal
+	//}
+	// ----
+
+	double dx = 1; // delta x; TODO Richtige Werte (Konstante) setzen
+	double dt = timeStep; // delta time; =
+	double alpha = 1; // =
+
+	double r = alpha * dt / dx * dx;
+
+	for (int y = 0; y < A.index.size; y++) {
+		for (int x = 0; x < A.index[y].size; y++) {
+			A.set_element(y, x, 0);
+			if (y == x)
+				A.set_element(y, x, (1 - 2 * r));
+			if ((x == y - 1 || x == y + 1) && y > 0 && y < (A.index.size - 1)) {
+				A.set_element(y, x, r);
+			}
+		}
 	}
+	A.set_element(0, 0, 1);
+	A.set_element(A.index.size-1, A.index[A.index.size].size-1, 1);
 }
 
 
-void DiffusionSimulator::diffuseTemperatureImplicit() { // TODO add your own parameters
+void DiffusionSimulator::diffuseTemperatureImplicit(float timeStep) { // TODO add your own parameters
 	// solve A T = b
 	// to be implemented
 	const int N = 25;//N = sizeX*sizeY*sizeZ
