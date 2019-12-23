@@ -42,6 +42,7 @@ void DiffusionSimulator::notifyCaseChanged(int testCase)
 	// TODO to be implemented
 	//
 	initField(16, 16);
+	cout << T->m << "  " << T->n << "\n";
 	switch (m_iTestCase)
 	{
 	case 0:
@@ -70,7 +71,7 @@ void DiffusionSimulator::initField(int m, int n)
 		vector<Real> newrow;
 		newrow.push_back(0);
 		for (int x = 0; x < n; x++) {
-			double random_value = (double)rand() / RAND_MAX * 2.0 - 1.0;//float in range -1 to 1
+			double random_value = ((double)rand() / (RAND_MAX)) * 2;
 			newrow.push_back(random_value);
 		}
 		newrow.push_back(0);
@@ -84,36 +85,34 @@ void DiffusionSimulator::initField(int m, int n)
 }
 
 Grid* DiffusionSimulator::diffuseTemperatureExplicit(float timeStep) { // TODO add your own parameters
-	Grid* newT = new Grid();
 
 	// TODO to be implemented
 	// make sure that the temperature in boundary cells stays zero
 	
 	// ----
+	Grid* newT = new Grid();
+	newT->m = T->m;
+	newT->n = T->n;
 	vector<Real> srow;
 	for (int k = 0; k < T->gridarray[0].size(); k++) {
 		srow.push_back(0);
 	}
 	newT->gridarray.push_back(srow);
-	for (int py = 0; py < T->gridarray.size(); py++) {
+	for (int py = 1; py < T->gridarray.size() - 1; py++) {
 		vector<Real> newrow;
 		newrow.push_back(0);
-		for (int px = 0; px < T->gridarray[py].size(); px++) {
-			if (py > 0 && py < T->gridarray.size() - 1) {			// TODO not < size - 1?
-				if (px > 0 && px < T->gridarray[py].size() - 1) {	// (same here)
-					int pointVal = T->gridarray[py][px];
-					int leftVal = T->gridarray[py][px - 1];
-					int rightVal = T->gridarray[py][px + 1];
-					int downVal = T->gridarray[py + 1][px];
-					int upVal = T->gridarray[py - 1][px];
+		for (int px = 1; px < T->gridarray[py].size() - 1; px++) {
+			double pointVal = T->gridarray[py][px];
+			double leftVal = T->gridarray[py][px - 1];
+			double rightVal = T->gridarray[py][px + 1];
+			double downVal = T->gridarray[py + 1][px];
+			double upVal = T->gridarray[py - 1][px];
 
-					int newPointVal = 0 * downVal - pointVal + upVal;
-					newPointVal += 0 * leftVal - pointVal + rightVal;
-					newPointVal += 0 * upVal - pointVal + downVal;
-					newPointVal += 0 * rightVal - pointVal + leftVal;
-					newrow.push_back(newPointVal);
-				}
-			}
+			double newPointVal = 0 * downVal - pointVal + upVal;
+			newPointVal += 0 * leftVal - pointVal + rightVal;
+			newPointVal += 0 * upVal - pointVal + downVal;
+			newPointVal += 0 * rightVal - pointVal + leftVal;
+			newrow.push_back(newPointVal);
 		}
 		newrow.push_back(0);
 		newT->gridarray.push_back(newrow);
@@ -235,7 +234,9 @@ void DiffusionSimulator::drawObjects()
 	//visualization
 	for (int y = 0; y < T->m+2; y++) {
 		for (int x = 0; x < T->n+2; x++) {
-			DUC->drawSphere(Vec3(x, y, 1), Vec3(1, T->gridarray[y][x], T->gridarray[y][x]));
+			cout << T->gridarray[y][x] << "\n";
+			DUC->setUpLighting(Vec3(), 0.4*Vec3(1, 1, 1), 100, Vec3(1, T->gridarray[y][x], T->gridarray[y][x]));
+			DUC->drawSphere(Vec3(x, y, 1), Vec3(1, 1, 1));
 		}
 	}
 }
