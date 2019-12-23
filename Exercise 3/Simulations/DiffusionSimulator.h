@@ -10,7 +10,7 @@ public:
 	// Construtors
 	Grid();
 	int m, n; // length = m, width = n
-	std::vector<std::vector<int>> gridarray;
+	std::vector<std::vector<Real>> gridarray;
 
 private:
 	//Attributes

@@ -41,6 +41,7 @@ void DiffusionSimulator::notifyCaseChanged(int testCase)
 	//
 	// TODO to be implemented
 	//
+	initField(16, 16);
 	switch (m_iTestCase)
 	{
 	case 0:
@@ -60,49 +61,81 @@ void DiffusionSimulator::initField(int m, int n)
 	T = new Grid();
 	T->m = m;
 	T->n = n;
+	vector<Real> srow;
+	for (int k = 0; k < n+2; k++) {
+		srow.push_back(0);
+	}
+	T->gridarray.push_back(srow);
 	for (int y = 0; y < m; y++) {
-		vector<int> newrow;
+		vector<Real> newrow;
+		newrow.push_back(0);
 		for (int x = 0; x < n; x++) {
 			double random_value = (double)rand() / RAND_MAX * 2.0 - 1.0;//float in range -1 to 1
 			newrow.push_back(random_value);
 		}
+		newrow.push_back(0);
 		T->gridarray.push_back(newrow);
 	}
+	vector<Real> erow;
+	for (int k = 0; k < n+2; k++) {
+		erow.push_back(0);
+	}
+	T->gridarray.push_back(erow);
 }
 
 Grid* DiffusionSimulator::diffuseTemperatureExplicit(float timeStep) { // TODO add your own parameters
 	Grid* newT = new Grid();
+
 	// TODO to be implemented
 	// make sure that the temperature in boundary cells stays zero
 	
 	// ----
-	for (int py = 0; py < T->gridarray.size; py++) {
-		for (int px = 0; px < T->gridarray[py].size; px++) {
-			if (py > 0 && py < T->gridarray.size) {			// TODO not < size - 1?
-				if (px > 0 && px < T->gridarray[py].size) {	// (same here)
+	vector<Real> srow;
+	for (int k = 0; k < T->gridarray[0].size(); k++) {
+		srow.push_back(0);
+	}
+	newT->gridarray.push_back(srow);
+	for (int py = 0; py < T->gridarray.size(); py++) {
+		vector<Real> newrow;
+		newrow.push_back(0);
+		for (int px = 0; px < T->gridarray[py].size(); px++) {
+			if (py > 0 && py < T->gridarray.size() - 1) {			// TODO not < size - 1?
+				if (px > 0 && px < T->gridarray[py].size() - 1) {	// (same here)
 					int pointVal = T->gridarray[py][px];
-					int leftVal = T->gridarray[py][px-1];
-					int rightVal = T->gridarray[py][px+1];
-					int downVal = T->gridarray[py+1][px];
-					int upVal = T->gridarray[py-1][px];
+					int leftVal = T->gridarray[py][px - 1];
+					int rightVal = T->gridarray[py][px + 1];
+					int downVal = T->gridarray[py + 1][px];
+					int upVal = T->gridarray[py - 1][px];
 
 					int newPointVal = 0 * downVal - pointVal + upVal;
 					newPointVal += 0 * leftVal - pointVal + rightVal;
 					newPointVal += 0 * upVal - pointVal + downVal;
 					newPointVal += 0 * rightVal - pointVal + leftVal;
-					newT->gridarray[py][px] = newPointVal;
+					newrow.push_back(newPointVal);
 				}
 			}
 		}
+		newrow.push_back(0);
+		newT->gridarray.push_back(newrow);
 	}
+	vector<Real> erow;
+	for (int k = 0; k < T->gridarray[0].size(); k++) {
+		erow.push_back(0);
+	}
+	newT->gridarray.push_back(erow);
 	return newT;
 }
 
-void setupB(std::vector<Real>& b) {// TODO add your own parameters
+void setupB(std::vector<Real>& b, Grid* T) {// TODO add your own parameters
 	// TODO to be implemented
 	// set vector B[sizeX*sizeY]
-	for (int i = 0; i < 25; i++) {
-		b.at(i) = 0;
+	//for (int y = 0; y < T->gridarray.size; y++) {
+	//	b.at(y) = 1 - (T->gridarray[y].size - 1);
+	//}
+	for (int y = 0; y < T->m; y++) {
+		for (int x = 0; x < T->n; x++) {
+			b.at(y*T->n + x) = -T->gridarray[y][x];
+		}
 	}
 }
 
@@ -136,18 +169,18 @@ void setupA(SparseMatrix<Real>& A, double factor, float timeStep) {//TODO add yo
 
 	double r = alpha * dt / dx * dx;
 
-	for (int y = 0; y < A.index.size; y++) {
-		for (int x = 0; x < A.index[y].size; y++) {
+	for (int y = 0; y < A.index.size(); y++) {
+		for (int x = 0; x < A.index[y].size(); y++) {
 			A.set_element(y, x, 0);
 			if (y == x)
 				A.set_element(y, x, (1 - 2 * r));
-			if ((x == y - 1 || x == y + 1) && y > 0 && y < (A.index.size - 1)) {
+			if ((x == y - 1 || x == y + 1) && y > 0 && y < (A.index.size() - 1)) {
 				A.set_element(y, x, r);
 			}
 		}
 	}
 	A.set_element(0, 0, 1);
-	A.set_element(A.index.size-1, A.index[A.index.size].size-1, 1);
+	A.set_element(A.index.size()-1, A.index[A.index.size()].size()-1, 1);
 }
 
 
@@ -159,7 +192,7 @@ void DiffusionSimulator::diffuseTemperatureImplicit(float timeStep) { // TODO ad
 	std::vector<Real> *b = new std::vector<Real>(N);
 
 	setupA(*A, 0.1, timeStep);
-	setupB(*b);
+	setupB(*b, T);
 
 	// perform solve
 	Real pcg_target_residual = 1e-05;
@@ -200,6 +233,11 @@ void DiffusionSimulator::drawObjects()
 {
 	// TODO to be implemented
 	//visualization
+	for (int y = 0; y < T->m+2; y++) {
+		for (int x = 0; x < T->n+2; x++) {
+			DUC->drawSphere(Vec3(x, y, 1), Vec3(1, T->gridarray[y][x], T->gridarray[y][x]));
+		}
+	}
 }
 
 
