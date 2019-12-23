@@ -30,7 +30,7 @@ public:
 	void drawFrame(ID3D11DeviceContext* pd3dImmediateContext);
 	void notifyCaseChanged(int testCase);
 	void initField(int m, int n);
-	void fillT();
+	void fillT(std::vector<Real>& x);
 	void simulateTimestep(float timeStep);
 	void externalForcesCalculations(float timeElapsed) {};
 	void onClick(int x, int y);

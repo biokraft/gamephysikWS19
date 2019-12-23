@@ -138,16 +138,30 @@ void setupB(std::vector<Real>& b, Grid* T) {// TODO add your own parameters
 	}
 }
 
-void DiffusionSimulator::fillT() {// TODO add your own parameters
-	for (int k = 0; k < T->m; k++) {
-		for (int j = 0; j < T->n; j++) {
-			if (k == 0 || j == 0 || k == T->m - 1 || j == T->n - 1)
-				T->gridarray[k][j] = 0;
-		}
-	}
+void DiffusionSimulator::fillT(std::vector<Real>& x) {// TODO add your own parameters
 	// TODO to be implemented
 	//fill T with solved vector x
 	//make sure that the temperature in boundary cells stays zero (done)
+	T->gridarray.clear();
+	vector<Real> srow;
+	for (int k = 0; k < T->gridarray[0].size(); k++) {
+		srow.push_back(0);
+	}
+	T->gridarray.push_back(srow);
+	for (int py = 1; py < T->gridarray.size() - 1; py++) {
+		vector<Real> newrow;
+		newrow.push_back(0);
+		for (int px = 1; px < T->gridarray[py].size() - 1; px++) {
+			newrow.push_back(x.at(py*(T->n + 2) + px));
+		}
+		newrow.push_back(0);
+		T->gridarray.push_back(newrow);
+	}
+	vector<Real> erow;
+	for (int k = 0; k < T->gridarray[0].size(); k++) {
+		erow.push_back(0);
+	}
+	T->gridarray.push_back(erow);
 }
 
 void setupA(SparseMatrix<Real>& A, double factor, float timeStep) {//TODO add your own parameters
@@ -179,14 +193,14 @@ void setupA(SparseMatrix<Real>& A, double factor, float timeStep) {//TODO add yo
 		}
 	}
 	A.set_element(0, 0, 1);
-	A.set_element(A.index.size()-1, A.index[A.index.size()].size()-1, 1);
+	A.set_element(A.index.size()-1, A.index[A.index.size()-1].size()-1, 1);
 }
 
 
 void DiffusionSimulator::diffuseTemperatureImplicit(float timeStep) { // TODO add your own parameters
 	// solve A T = b
 	// to be implemented
-	const int N = 25;//N = sizeX*sizeY*sizeZ
+	const int N = T->m*T->n;//N = sizeX*sizeY*sizeZ
 	SparseMatrix<Real> *A = new SparseMatrix<Real> (N);
 	std::vector<Real> *b = new std::vector<Real>(N);
 
@@ -208,7 +222,7 @@ void DiffusionSimulator::diffuseTemperatureImplicit(float timeStep) { // TODO ad
 	// preconditioners: 0 off, 1 diagonal, 2 incomplete cholesky
 	solver.solve(*A, *b, x, ret_pcg_residual, ret_pcg_iterations, 0);
 	// x contains the new temperature values
-	fillT();//copy x to T
+	fillT(x);//copy x to T
 }
 
 
