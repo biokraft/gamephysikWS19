@@ -1,5 +1,6 @@
 #include "DiffusionSimulator.h"
 #include "pcgsolver.h"
+#include <stdlib.h>
 using namespace std;
 
 Grid::Grid() {
@@ -54,22 +55,36 @@ void DiffusionSimulator::notifyCaseChanged(int testCase)
 	}
 }
 
+void DiffusionSimulator::initField(int m, int n)
+{
+	T = new Grid();
+	T->m = m;
+	T->n = n;
+	for (int y = 0; y < m; y++) {
+		vector<int> newrow;
+		for (int x = 0; x < n; x++) {
+			double random_value = (double)rand() / RAND_MAX * 2.0 - 1.0;//float in range -1 to 1
+			newrow.push_back(random_value);
+		}
+		T->gridarray.push_back(newrow);
+	}
+}
+
 Grid* DiffusionSimulator::diffuseTemperatureExplicit(float timeStep) { // TODO add your own parameters
 	Grid* newT = new Grid();
 	// TODO to be implemented
 	// make sure that the temperature in boundary cells stays zero
 	
 	// ----
-	Grid* newTPlusOne = new Grid();
-	for (int py = 0; py < newT->gridarray.size; py++) {
-		for (int px = 0; px < newT->gridarray[py].size; px++) {
-			if (py > 0 && py < newT->gridarray.size) {			// TODO not < size - 1?
-				if (px > 0 && px < newT->gridarray[py].size) {	// (same here)
-					int pointVal = newT->gridarray[py][px];
-					int leftVal = newT->gridarray[py][px-1];
-					int rightVal = newT->gridarray[py][px+1];
-					int downVal = newT->gridarray[py+1][px];
-					int upVal = newT->gridarray[py-1][px];
+	for (int py = 0; py < T->gridarray.size; py++) {
+		for (int px = 0; px < T->gridarray[py].size; px++) {
+			if (py > 0 && py < T->gridarray.size) {			// TODO not < size - 1?
+				if (px > 0 && px < T->gridarray[py].size) {	// (same here)
+					int pointVal = T->gridarray[py][px];
+					int leftVal = T->gridarray[py][px-1];
+					int rightVal = T->gridarray[py][px+1];
+					int downVal = T->gridarray[py+1][px];
+					int upVal = T->gridarray[py-1][px];
 
 					int newPointVal = 0 * downVal - pointVal + upVal;
 					newPointVal += 0 * leftVal - pointVal + rightVal;
@@ -80,7 +95,7 @@ Grid* DiffusionSimulator::diffuseTemperatureExplicit(float timeStep) { // TODO a
 			}
 		}
 	}
-	return newTPlusOne;
+	return newT;
 }
 
 void setupB(std::vector<Real>& b) {// TODO add your own parameters
